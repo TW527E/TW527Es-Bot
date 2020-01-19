@@ -28,6 +28,11 @@ async def on_member_remove(member):
 async def ping(ctx):
     await ctx.send(F'{round(bot.latency*1000)} 毫秒')
 
+@bot.command()
+async def Minecraft(ctx):
+    pic = discord.File('C:\\Users\\Taiwan\\Documents\\GitHub\\TaiwanMC_littlelove\Photo\\4GNJ.png')
+    await ctx.send('你是說這個遊戲嗎?')
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
