@@ -1,5 +1,7 @@
 {
     "Token": "NTYzMjMzMzgyNDc4MjQ5OTg1.XiPoaw.1SQeC0sVpE2ypxdHu17C-70cl5w",
+    "member_leave_channel": "638710224554819606",
+    "leave_message": "F'>> {member} << 退出了伺服器'",
     "member_join_channel": "638710187678629888",
-    "member_leave_channel": "638710224554819606"
+    "join_message": "F'>> {member.mention} << 加入了伺服器'"
 }
