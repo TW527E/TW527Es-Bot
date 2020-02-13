@@ -15,7 +15,7 @@ class Message(Cog_Extension):
     #指令-MC_img 隨機傳送 Minecraft 圖片
     @commands.command()
     async def MC(self, ctx):
-        print('有人打入了 [MC_img 隨機傳送 Minecraft 圖片] 指令')
+        print(F'【指令】 {ctx.author} 打了 [MC_img 隨機傳送 Minecraft 圖片] 指令')
         await ctx.message.delete()
         random_pic = random.choice(jdata['MC_img'])
         MC_img = discord.File(random_pic)
@@ -24,31 +24,33 @@ class Message(Cog_Extension):
     #指令-MC_img 隨機傳送網路上的 Minecraft 圖片
     @commands.command()
     async def url_img(self, ctx):
-        print('有人打入了 [url_img 隨機傳送網路上的 Minecraft 圖片] 指令')
+        print(F'【指令】 {ctx.author} 打了 [url_img 隨機傳送網路上的 Minecraft 圖片] 指令')
         await ctx.message.delete()
         random_pic = random.choice(jdata['url_img'])
         await ctx.send(random_pic)
 
     #指令-say_msg 機器人訊息複誦
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def say_msg(self, ctx, *,msg):
-        print('有人打入了 [say_messange 復誦訊息] 指令')
+        print(F'【指令】 {ctx.author} 打了 [say_messange 訊息復誦] 指令 讓機器人說出 [{msg}]')
         await ctx.message.delete()
         await ctx.send(msg)
     
     #指令-del_msg 機器人清理訊息
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def del_msg(self, ctx, num:int):
-        print('有人打入了 [del_messange 刪除訊息] 指令')
+        print(F'【指令】 {ctx.author} 打了 [del_messange 刪除訊息] 指令')
         await ctx.channel.purge(limit=num)
     
     #指令-now_time 現在時間
     @commands.command()
     async def now_time(self, ctx):
-        print('有人打入了 [now_time 現在時間] 指令')
+        print(F'【指令】 {ctx.author} 打了 [now_time 現在時間] 指令')
         await ctx.message.delete()
         now = datetime.datetime.now()
-        await ctx.send(F'現在台灣的時間是 {now}')
+        await ctx.send(F'現在機器人的時間是 {now}')
     
 
 def setup(bot):

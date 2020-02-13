@@ -25,6 +25,7 @@ class Event(Cog_Extension):
         channel = self.bot.get_channel(int(jdata['member_leave_channel']))
         await channel.send(F'>> {member} << 退出了伺服器')
 
+
     #訊息對話
     @commands.Cog.listener()
     async def on_message(self, msg):
