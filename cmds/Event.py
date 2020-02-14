@@ -14,17 +14,22 @@ class Event(Cog_Extension):
     #伺服器通知-有人加入了伺服器(setting.json)
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        print(F'> [ {member} ] 加入了伺服器')
-        channel = self.bot.get_channel(int(jdata['member_join_channel']))
-        await channel.send(F'>> {member.mention} << 加入了伺服器')
+        if member.guild.id == 447628147286999042:
+            print(F'> 〔{member}〕 加入了伺服器')
+            channel = self.bot.get_channel(int(jdata['member_join_channel']))
+            await channel.send(F'>> {member.mention} << 加入了伺服器')
+        else:
+            pass
 
     #伺服器通知-有人退出了伺服器(setting.json)
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        print(F'> [ {member} ] 退出了伺服器')
-        channel = self.bot.get_channel(int(jdata['member_leave_channel']))
-        await channel.send(F'>> {member} << 退出了伺服器')
-
+        if member.guild.id == 447628147286999042:
+            print(F'> 〔{member}〕 退出了伺服器')
+            channel = self.bot.get_channel(int(jdata['member_leave_channel']))
+            await channel.send(F'>> {member} << 退出了伺服器')
+        else:
+            pass
 
     #訊息對話
     @commands.Cog.listener()
