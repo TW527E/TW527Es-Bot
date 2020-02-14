@@ -38,8 +38,8 @@ class Main(Cog_Extension):
         embed.add_field(name="*|reload <插件檔案名>", value="Reload plugin 重新載入插件", inline=False)
         embed.add_field(name="*|reload_all", value="Reload all plugin 重新載入所有插件", inline=True)
         await ctx.send(embed=embed)
-
     
+
     #指令-Ping 延遲
     @commands.command()
     async def ping(self, ctx):

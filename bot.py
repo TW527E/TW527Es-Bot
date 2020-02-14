@@ -23,7 +23,7 @@ async def on_ready():
     await channel.send(">> **TaiwanMC-苦力怕同學** << 上線了")
 
 #錯誤通知
-
+'''
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error,commands.CommandNotFound):
@@ -49,18 +49,14 @@ async def on_command_error(ctx, error):
         await ctx.send(F'【錯誤】**{ctx.author.mention}** 發生了一個未知的錯誤! 請在試一次!')
         print(F'【指令】{ctx.author}  讓指令發生了未知的錯誤')
         await asyncio.sleep(3)
-        await ctx.channel.purge(limit=1)
+        await ctx.channel.purge(limit=1)'''
 
 #指令
-@bot.command()
-async def join(ctx):
-    await ctx.author.voice.channel.connect()
-    
 #指令-load
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def load(ctx, Exception):
-    print(F'有人打入了[載入 {Exception}]指令')
+    print(F'{ctx.author} 打入了[載入 {Exception}]指令')
     await ctx.message.delete()
     bot.load_extension(F'cmds.{Exception}')
     await ctx.send(F'載入 **{Exception}** 完成!')
@@ -71,7 +67,7 @@ async def load(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def unload(ctx, Exception):
-    print(F'有人打入了[卸載 {Exception}]指令')
+    print(F'{ctx.author} 打入了[卸載 {Exception}]指令')
     await ctx.message.delete()
     bot.unload_extension(F'cmds.{Exception}')
     await ctx.send(F'卸載 **{Exception}** 完成!')
@@ -82,7 +78,7 @@ async def unload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload(ctx, Exception):
-    print(F'有人打入了[重新載入 {Exception}]指令')
+    print(F'{ctx.author} 打入了[重新載入 {Exception}]指令')
     await ctx.message.delete()
     bot.reload_extension(F'cmds.{Exception}')
     await ctx.send(F'重新載入 **{Exception}** 完成!')
@@ -93,7 +89,7 @@ async def reload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload_all(ctx):
-    print(F'有人打入了[重新載入 全部]指令')
+    print(F'{ctx.author} 打入了[重新載入 全部]指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
     bot.reload_extension('cmds.Time_message')
