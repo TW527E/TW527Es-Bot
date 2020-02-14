@@ -21,8 +21,8 @@ class Voice_channel(Cog_Extension):
     async def leave(self, ctx):
         print(f'《語音頻道》{ctx.author} 打入了 [leave] 讓機器人加入 [頻道')
         await ctx.message.delete()
-        await channel.disconnect()
-        await ctx.send('《語音頻道》已退出 語音頻道*')
+        await ctx.voice_client.disconnect()
+        await ctx.send('《語音頻道》已退出 **語音頻道**')
 
 def setup(bot):
     bot.add_cog(Voice_channel(bot))
