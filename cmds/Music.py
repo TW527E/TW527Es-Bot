@@ -33,15 +33,15 @@ class Music(Cog_Extension):
         try:
             if song_there:
                 os.remove("song.mp3")
-                print("Removed old song file")
+                print("《音樂》已刪除舊的音樂檔案")
         except PermissionError:
-            print("Trying to delete song file, but it's being played")
-            await ctx.send("ERROR: Music playing")
+            print("《音樂》正在嘗試刪除音樂檔案，但音樂正在撥放")
+            await ctx.send("《音樂》錯誤:音樂已經在撥放了")
             return
 
-        await ctx.send("Getting everything ready now")
+        await ctx.send("《音樂》準備完成!")
 
-        voice = get(bot.voice_clients, guild=ctx.guild)
+        voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -53,22 +53,22 @@ class Music(Cog_Extension):
         }
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            print("Downloading audio now\n")
+            print("《音樂》音樂下載中\n")
             ydl.download([url])
 
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
                 name = file
-                print(f"Renamed File: {file}\n")
+                print(f"重新命名檔案: {file}\n")
                 os.rename(file, "song.mp3")
 
-        voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: print("Song done!"))
+        voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: print("《音樂》音樂播放完畢"))
         voice.source = discord.PCMVolumeTransformer(voice.source)
         voice.source.volume = 0.07
 
         nname = name.rsplit("-", 2)
-        await ctx.send(f"Playing: {nname[0]}")
-        print("playing\n")
+        await ctx.send(f"《音樂》播放中: {nname[0]}")
+        print("《音樂》播放中\n")
 
 def setup(bot):
     bot.add_cog(Music(bot))
