@@ -10,23 +10,6 @@ import youtube_dl
 class Music(Cog_Extension):
     
     @commands.command()
-    async def join(self, ctx):
-        print(f'《語音頻道》〔{ctx.author}〕 輸入 [join] 使機器人加入頻道')
-        channel = ctx.author.voice.channel
-        await ctx.message.delete()
-        await channel.connect()
-        await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
-
-
-    @commands.command()
-    async def leave(self, ctx):
-        print(f'《語音頻道》〔{ctx.author}〕 輸入 [leave] 使機器人退出頻道')
-        await ctx.message.delete()
-        await ctx.voice_client.disconnect()
-        await ctx.send('《語音頻道》已退出 **語音頻道**')
-
-    
-    @commands.command()
     async def play(self, ctx, url: str):
 
         song_there = os.path.isfile("song.mp3")
