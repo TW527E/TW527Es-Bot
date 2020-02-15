@@ -6,7 +6,7 @@ import os
 import nacl
 
 
-class Voice_channel(Cog_Extension):
+class Music(Cog_Extension):
     
     @commands.command()
     async def join(self, ctx):
@@ -25,4 +25,4 @@ class Voice_channel(Cog_Extension):
         await ctx.send('《語音頻道》已退出 **語音頻道**')
 
 def setup(bot):
-    bot.add_cog(Voice_channel(bot))
+    bot.add_cog(Music(bot))

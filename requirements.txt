@@ -1,4 +1,6 @@
 discord.py
+discord.py[voice]
+youtube_dl
 Flask
 gunicorn
 pynacl

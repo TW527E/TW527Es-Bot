@@ -70,7 +70,7 @@ class Main(Cog_Extension):
         embed.add_field(name="Status", value="狀態", inline=False)
         embed.add_field(name="Time_message", value="公告", inline=True)
         embed.add_field(name="Event", value="事件", inline=False)
-        embed.add_field(name="Voice_channel", value="語音頻道", inline=True)
+        embed.add_field(name="Music", value="音樂.語音", inline=True)
         await ctx.send(embed=embed)
     
 

@@ -96,7 +96,7 @@ async def reload_all(ctx):
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Event')
     bot.reload_extension('cmds.Status')
-    bot.reload_extension('cmds.Voice_channel')
+    bot.reload_extension('cmds.Music')
     await ctx.send(F'重新載入 **全部** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
