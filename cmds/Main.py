@@ -45,7 +45,7 @@ class Main(Cog_Extension):
         embed.add_field(name="*|idle", value="idle bot 閒置機器人", inline=False)
         embed.add_field(name="-------------------", value="公告指令", inline=True)
         embed.add_field(name="*|set_auto_ch <頻道ID>", value="set auto message channel 設定 發送公告訊息 頻道", inline=False)
-        embed.add_field(name="*|set_auto_time <秒數>", value="set auto message time 設定 發送公告訊息 的秒數", inline=True)
+        embed.add_field(name="*|set_auto_time <時間>", value="set auto message time 設定 發送公告訊息 的秒數", inline=True)
         await ctx.send(embed=embed)
 
     #指令-指令幫助2
