@@ -28,6 +28,7 @@ class Channel(Cog_Extension):
     @commands.has_permissions(administrator=True)
     async def add_text_ch(self, ctx, *, msg):
         guild = ctx.message.guild
+        print(f'《語音頻道》創建語音頻道 在〘**{guild}**〙')
         await ctx.message.delete()
         await guild.create_text_channel(msg)
         await ctx.send(f'《文字頻道》創建文字頻道 在〘**{guild}**〙')
@@ -36,9 +37,10 @@ class Channel(Cog_Extension):
     @commands.has_permissions(administrator=True)
     async def add_voice_ch(self, ctx, *, msg):
         guild = ctx.message.guild
+        print(f'《語音頻道》創建語音頻道 在〘**{guild}**〙')
         await ctx.message.delete()
         await guild.create_voice_channel(msg)
-        await ctx.send(f'《文字頻道》創建語音頻道 在〘**{guild}**〙')
+        await ctx.send(f'《語音頻道》創建語音頻道 在〘**{guild}**〙')
         
 
 def setup(bot):
