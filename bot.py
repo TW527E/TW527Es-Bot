@@ -3,7 +3,7 @@ import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 import json, asyncio
 import os #導入os模組
-
+import keep_alive #導入 keep_alive
 
 #讀取setting.json檔案
 with open('setting.json','r', encoding='utf8') as jfile:
@@ -107,5 +107,6 @@ for Filename in os.listdir('./cmds'):
         bot.load_extension(F'cmds.{Filename[:-3]}')
 
 if __name__ == "__main__":
+    keep_alive.keep_alive()
     #Token-金鑰(setting.json)
     bot.run(jdata['Token'])
