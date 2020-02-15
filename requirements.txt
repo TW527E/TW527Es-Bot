@@ -1,0 +1,7 @@
+discord.py
+Flask
+gunicorn
+pynacl
+django
+gunicorn
+django-heroku
