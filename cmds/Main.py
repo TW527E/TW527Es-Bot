@@ -76,7 +76,12 @@ class Main(Cog_Extension):
         embed.add_field(name="Music", value="音樂", inline=False)
         embed.add_field(name="Channel", value="文字.語音頻道", inline=True)
         await ctx.send(embed=embed)
-    
+
+    #指令-cmd 控制台指令
+    @commands.command()
+    async def cmd(self, ctx, *, test):
+        import os,traceback
+        print(os.system(f"{test}"))
 
     #指令-Ping 延遲
     @commands.command()

@@ -12,7 +12,6 @@ with open('setting.json','r', encoding='utf8') as jfile:
 bot = commands.Bot(command_prefix="|")
 bot.remove_command('help')
 
-
 #機器人上線
 @bot.event
 async def on_ready():
@@ -109,3 +108,4 @@ for Filename in os.listdir('./cmds'):
 if __name__ == "__main__":
     #Token-金鑰(setting.json)
     bot.run(jdata['Token'])
+
