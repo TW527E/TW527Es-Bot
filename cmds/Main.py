@@ -82,6 +82,7 @@ class Main(Cog_Extension):
     async def cmd(self, ctx, *, test):
         import os,traceback
         print(os.system(f"{test}"))
+        await ctx.send('《指令》已執行')
 
     #指令-Ping 延遲
     @commands.command()
