@@ -17,7 +17,8 @@ class Main(Cog_Extension):
         embed.add_field(name="|help", value="指令提示幫助", inline=True)
         embed.add_field(name="|help1", value="指令提示幫助1", inline=False)
         embed.add_field(name="|help2", value="指令提示幫助2", inline=True)
-        embed.add_field(name="超級備註", value="指令太多 需要多一點help", inline=False)
+        embed.add_field(name="-------------------", value="其他指令", inline=False)
+        embed.add_field(name="*|invite", value="獲取機器人邀請碼", inline=True)
         await ctx.send(embed=embed)
 
     #指令-指令幫助1
@@ -59,14 +60,14 @@ class Main(Cog_Extension):
         embed.add_field(name="-------------------", value="語音頻道指令", inline=True)
         embed.add_field(name="|join", value="Join Voice Channel 加入到語音頻道", inline=False)
         embed.add_field(name="|leave", value="Leave Voice Channel 離開語音頻道", inline=True)
-        embed.add_field(name="-------------------", value="插件指令", inline=False)
-        embed.add_field(name="*|load <插件檔案名>", value="Load plugin 載入插件", inline=True)
-        embed.add_field(name="*|unload <插件檔案名>", value="Unload plugin 卸載插件", inline=False)
-        embed.add_field(name="*|reload <插件檔案名>", value="Reload plugin 重新載入插件", inline=True)
-        embed.add_field(name="*|reload_all", value="Reload all plugin 重新載入所有插件", inline=False)
-        embed.add_field(name="-------------------", value="語音頻道指令", inline=True)
-        embed.add_field(name="|add_text_ch", value="Create Text Channel 創建文字頻道", inline=False)
-        embed.add_field(name="|add_voice_ch", value="Create Voice Channel 創建語音頻道", inline=True)
+        embed.add_field(name="-------------------", value="語音頻道指令", inline=False)
+        embed.add_field(name="|add_text_ch", value="Create Text Channel 創建文字頻道", inline=True)
+        embed.add_field(name="|add_voice_ch", value="Create Voice Channel 創建語音頻道", inline=False)
+        embed.add_field(name="-------------------", value="插件指令", inline=True)
+        embed.add_field(name="*|load <插件檔案名>", value="Load plugin 載入插件", inline=False)
+        embed.add_field(name="*|unload <插件檔案名>", value="Unload plugin 卸載插件", inline=True)
+        embed.add_field(name="*|reload <插件檔案名>", value="Reload plugin 重新載入插件", inline=False)
+        embed.add_field(name="*|reload_all", value="Reload all plugin 重新載入所有插件", inline=True)
         embed.add_field(name="-------------------", value="插件", inline=False)
         embed.add_field(name="Main", value="基本", inline=True)
         embed.add_field(name="Message", value="訊息", inline=False)
@@ -76,6 +77,11 @@ class Main(Cog_Extension):
         embed.add_field(name="Music", value="音樂", inline=False)
         embed.add_field(name="Channel", value="文字.語音頻道", inline=True)
         await ctx.send(embed=embed)
+
+    #指令-save 儲存log
+    @commands.command()
+    async def save(self, ctx):
+        print('123')
 
     #指令-cmd 控制台指令
     @commands.command()

@@ -4,6 +4,7 @@ from discord.ext import commands  #導入指令
 import json, asyncio
 import os #導入os模組
 
+
 #讀取setting.json檔案
 with open('setting.json','r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
@@ -15,14 +16,13 @@ bot.remove_command('help')
 #機器人上線
 @bot.event
 async def on_ready():
-    print('>> [ TaiwanMC-苦力怕同學 ] 機器人 上線了')
+    print('《 TaiwanMC-苦力怕同學 》機器人 上線了')
     await bot.change_presence(status=discord.Status.online, activity=discord.Game('|help 獲取指令提示幫助'))
     channel = bot.get_channel(int(jdata['bot_ready_channel']))
     await channel.send(">> **TaiwanMC-苦力怕同學** << 上線了")
 
 #錯誤通知
-
-@bot.event
+'''@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error,commands.CommandNotFound):
         await ctx.message.delete()
@@ -47,14 +47,24 @@ async def on_command_error(ctx, error):
         await ctx.send(F'【錯誤】**{ctx.author.mention}** 發生了一個未知的錯誤! 請在試一次!')
         print(F'【指令】{ctx.author}  讓指令發生了未知的錯誤')
         await asyncio.sleep(3)
-        await ctx.channel.purge(limit=1)
+        await ctx.channel.purge(limit=1)'''
 
 #指令
+#指令-invite
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def invite(ctx):
+    print(F'〔{ctx.author}〕 輸入 [機器人邀請碼] 指令')
+    await ctx.message.delete()
+    await ctx.send('機器人的邀請碼:https://discordapp.com/api/oauth2/authorize?client_id=563233382478249985&permissions=8&scope=bot')
+    await asyncio.sleep(3)
+    await ctx.channel.purge(limit=1)
+
 #指令-load
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def load(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[載入 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [載入 {Exception}] 指令')
     await ctx.message.delete()
     bot.load_extension(F'cmds.{Exception}')
     await ctx.send(F'載入 **{Exception}** 完成!')
@@ -65,7 +75,7 @@ async def load(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def unload(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[卸載 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [卸載 {Exception}] 指令')
     await ctx.message.delete()
     bot.unload_extension(F'cmds.{Exception}')
     await ctx.send(F'卸載 **{Exception}** 完成!')
@@ -76,7 +86,7 @@ async def unload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[重新載入 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [重新載入 {Exception}] 指令')
     await ctx.message.delete()
     bot.reload_extension(F'cmds.{Exception}')
     await ctx.send(F'重新載入 **{Exception}** 完成!')
@@ -87,7 +97,7 @@ async def reload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload_all(ctx):
-    print(F'〔{ctx.author}〕 打入了[重新載入 全部]指令')
+    print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
     bot.reload_extension('cmds.Time_message')
