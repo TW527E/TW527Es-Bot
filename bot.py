@@ -19,7 +19,7 @@ async def on_ready():
     print('《 TaiwanMC-苦力怕同學 》機器人 上線了')
     await bot.change_presence(status=discord.Status.online, activity=discord.Game('|help 獲取指令提示幫助'))
     channel = bot.get_channel(int(jdata['bot_ready_channel']))
-    await channel.send(">> **TaiwanMC-苦力怕同學** << 上線了")
+    await channel.send("《 **__TaiwanMC-苦力怕同學__** 》上線了")
 
 #錯誤通知
 '''@bot.event
