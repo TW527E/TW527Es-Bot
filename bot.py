@@ -4,7 +4,6 @@ from discord.ext import commands  #導入指令
 import json, asyncio
 import os #導入os模組
 
-
 #讀取setting.json檔案
 with open('setting.json','r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
