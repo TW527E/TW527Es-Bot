@@ -32,5 +32,14 @@ class Status(Cog_Extension):
         await ctx.send('【狀態】我太懶了 不想做事!')
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game('ヾ(≧ ▽ ≦)ゝ'))
 
+    #指令-dnd
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def dnd(self, ctx):
+        print(F'《指令》〔{ctx.author}〕 輸入 [dnd - 機器人請勿打擾] 指令')
+        await ctx.message.delete()
+        await ctx.send('【狀態】機器人測試中 請勿打擾')
+        await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Game('機器人測試中 請勿打擾'))
+
 def setup(bot):
     bot.add_cog(Status(bot))
