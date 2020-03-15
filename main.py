@@ -54,17 +54,17 @@ async def on_command_error(ctx, error):
 #指令
 #指令-invite
 @bot.command()
-@commands.has_permissions(administrator=True)
+@commands.is_owner()
 async def invite(ctx):
     print(F'〔{ctx.author}〕 輸入 [機器人邀請碼] 指令')
     await ctx.message.delete()
-    await ctx.send('機器人的邀請碼:https://discordapp.com/api/oauth2/authorize?client_id=563233382478249985&permissions=8&scope=bot')
+    await ctx.send("機器人的邀請碼:https://discordapp.com/api/oauth2/authorize?client_id=563233382478249985&permissions=8&scope=bot")
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
 #指令-load
 @bot.command()
-@commands.has_permissions(administrator=True)
+@commands.is_owner()
 async def load(ctx, Exception):
     print(F'〔{ctx.author}〕 輸入 [載入 {Exception}] 指令')
     await ctx.message.delete()
@@ -75,7 +75,7 @@ async def load(ctx, Exception):
 
 #指令-unload
 @bot.command()
-@commands.has_permissions(administrator=True)
+@commands.is_owner()
 async def unload(ctx, Exception):
     print(F'〔{ctx.author}〕 輸入 [卸載 {Exception}] 指令')
     await ctx.message.delete()
@@ -86,7 +86,7 @@ async def unload(ctx, Exception):
 
 #指令-reload
 @bot.command()
-@commands.has_permissions(administrator=True)
+@commands.is_owner()
 async def reload(ctx, Exception):
     print(F'〔{ctx.author}〕 輸入 [重新載入 {Exception}] 指令')
     await ctx.message.delete()
@@ -97,7 +97,7 @@ async def reload(ctx, Exception):
 
 #指令-reload_all
 @bot.command()
-@commands.has_permissions(administrator=True)
+@commands.is_owner()
 async def reload_all(ctx):
     print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()

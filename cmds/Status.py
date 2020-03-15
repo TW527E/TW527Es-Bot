@@ -7,7 +7,7 @@ class Status(Cog_Extension):
 
     #指令-shutdown 下線
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.is_owner()
     async def shutdown(self, ctx):
         print(F'《指令》〔{ctx.author}〕 輸入 [shutdown - 機器人關機] 指令')
         await ctx.message.delete()
@@ -16,7 +16,7 @@ class Status(Cog_Extension):
 
     #指令-online 上線
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.is_owner()
     async def online(self, ctx):
         print(F'《指令》〔{ctx.author}〕 輸入 [online - 機器人上線] 指令')
         await ctx.message.delete()
@@ -25,7 +25,7 @@ class Status(Cog_Extension):
 
     #指令-idle 
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.is_owner()
     async def idle(self, ctx):
         print(F'《指令》〔{ctx.author}〕 輸入 [idle - 機器人閒置] 指令')
         await ctx.message.delete()
@@ -34,7 +34,7 @@ class Status(Cog_Extension):
 
     #指令-dnd
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.is_owner()
     async def dnd(self, ctx):
         print(F'《指令》〔{ctx.author}〕 輸入 [dnd - 機器人請勿打擾] 指令')
         await ctx.message.delete()
