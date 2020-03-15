@@ -69,22 +69,19 @@ class Main(Cog_Extension):
         embed.add_field(name="*|reload <插件檔案名>", value="Reload plugin 重新載入插件", inline=False)
         embed.add_field(name="*|reload_all", value="Reload all plugin 重新載入所有插件", inline=True)
         embed.add_field(name="-------------------", value="插件", inline=False)
-        embed.add_field(name="Main", value="基本", inline=True)
-        embed.add_field(name="Message", value="訊息", inline=False)
-        embed.add_field(name="Status", value="狀態", inline=True)
-        embed.add_field(name="Time_message", value="公告", inline=False)
-        embed.add_field(name="Event", value="事件", inline=True)
-        embed.add_field(name="Music", value="音樂", inline=False)
-        embed.add_field(name="Channel", value="文字.語音頻道", inline=True)
+        embed.add_field(name="cmds.Main", value="基本", inline=True)
+        embed.add_field(name="cmds.Message", value="訊息", inline=False)
+        embed.add_field(name="cmds.Status", value="狀態", inline=True)
+        embed.add_field(name="cmds.Time_message", value="公告", inline=False)
+        embed.add_field(name="cmds.Channel", value="文字.語音頻道", inline=True)
+        embed.add_field(name="cmds.Music", value="音樂", inline=False)
+        embed.add_field(name="event.Member", value="成員加入.退出", inline=True)
+        embed.add_field(name="event.Msg", value="自動回覆訊息", inline=False)
         await ctx.send(embed=embed)
-
-    #指令-save 儲存log
-    @commands.command()
-    async def save(self, ctx):
-        print('123')
 
     #指令-cmd 控制台指令
     @commands.command()
+    @commands.is_owner()
     async def cmd(self, ctx, *, test):
         import os,traceback
         print(os.system(f"{test}"))

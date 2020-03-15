@@ -66,9 +66,9 @@ async def invite(ctx):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def load(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[載入 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [載入 {Exception}] 指令')
     await ctx.message.delete()
-    bot.load_extension(F'cmds.{Exception}')
+    bot.load_extension(F'{Exception}')
     await ctx.send(F'載入 **{Exception}** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
@@ -77,9 +77,9 @@ async def load(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def unload(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[卸載 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [卸載 {Exception}] 指令')
     await ctx.message.delete()
-    bot.unload_extension(F'cmds.{Exception}')
+    bot.unload_extension(F'{Exception}')
     await ctx.send(F'卸載 **{Exception}** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
@@ -88,9 +88,9 @@ async def unload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload(ctx, Exception):
-    print(F'〔{ctx.author}〕 打入了[重新載入 {Exception}]指令')
+    print(F'〔{ctx.author}〕 輸入 [重新載入 {Exception}] 指令')
     await ctx.message.delete()
-    bot.reload_extension(F'cmds.{Exception}')
+    bot.reload_extension(F'{Exception}')
     await ctx.send(F'重新載入 **{Exception}** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
@@ -99,23 +99,29 @@ async def reload(ctx, Exception):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def reload_all(ctx):
-    print(F'〔{ctx.author}〕 打入了[重新載入 全部]指令')
+    print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
     bot.reload_extension('cmds.Time_message')
     bot.reload_extension('cmds.Message')
-    bot.reload_extension('cmds.Event')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')
     bot.reload_extension('cmds.Channel')
+    bot.reload_extension('event.Msg')
+    bot.reload_extension('event.Member')
     await ctx.send(F'重新載入 **全部** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#導入指令
+#導入指令- cmds
 for Filename in os.listdir('./cmds'):
     if Filename.endswith('.py'):
         bot.load_extension(F'cmds.{Filename[:-3]}')
+
+#導入指令- event
+for Filename in os.listdir('./event'):
+    if Filename.endswith('.py'):
+        bot.load_extension(F'event.{Filename[:-3]}')
 
 if __name__ == "__main__":
     keep_alive.keep_alive()

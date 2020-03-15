@@ -9,28 +9,8 @@ import json  #導入json的檔案形式
 with open('setting.json','r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
-class Event(Cog_Extension):
+class Msg(Cog_Extension):
         
-    #伺服器通知-有人加入了伺服器(setting.json)
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        if member.guild.id == 447628147286999042:
-            print(F'> 〔{member}〕 加入了伺服器')
-            channel = self.bot.get_channel(int(jdata['member_join_channel']))
-            await channel.send(F'>> {member.mention} << 加入了伺服器')
-        else:
-            pass
-
-    #伺服器通知-有人退出了伺服器(setting.json)
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
-        if member.guild.id == 447628147286999042:
-            print(F'> 〔{member}〕 退出了伺服器')
-            channel = self.bot.get_channel(int(jdata['member_leave_channel']))
-            await channel.send(F'>> {member} << 退出了伺服器')
-        else:
-            pass
-
     #訊息對話
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -52,4 +32,4 @@ class Event(Cog_Extension):
             print('有人打入了 [不雅的詞語] 因此 觸發了[警告機制]')
 
 def setup(bot):
-    bot.add_cog(Event(bot))
+    bot.add_cog(Msg(bot))
