@@ -85,4 +85,4 @@ class Help(Cog_Extension):
         await ctx.send(embed=embed)
 
 def setup(bot):
-bot.add_cog(Help(bot))
+    bot.add_cog(Help(bot))

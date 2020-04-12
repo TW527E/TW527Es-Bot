@@ -5,7 +5,6 @@ from core.classes import Cog_Extension #導入Cog_extension 的定義
 import os
 import nacl
 
-
 class Channel(Cog_Extension):
     
     @commands.command()
