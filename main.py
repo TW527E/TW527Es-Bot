@@ -109,7 +109,7 @@ async def reload_all(ctx):
     bot.reload_extension('cmds.Channel')
     bot.reload_extension('event.Msg')
     bot.reload_extension('event.Member')
-    bot.reload_extension('event.Help')
+    bot.reload_extension('cmds.Help')
     await ctx.send(F'重新載入 **全部** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
