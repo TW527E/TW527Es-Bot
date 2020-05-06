@@ -23,27 +23,28 @@ async def on_ready():
 #錯誤通知
 '''@bot.event
 async def on_command_error(ctx, error):
+    if hasattr()
     if isinstance(error,commands.CommandNotFound):
         await ctx.message.delete()
-        await ctx.send(f'【錯誤】**{ctx.author.mention}** 您輸入了從來沒有在這世界的指令!')
+        await ctx.send(f'【錯誤】**{ctx.author.mention}** 痾...... 好像沒有這東西喔!')
         print(F'【指令】{ctx.author}  輸入了從來沒有在這世界的指令')
         await asyncio.sleep(3)
         await ctx.channel.purge(limit=1)
     elif isinstance(error,commands.MissingPermissions):
         await ctx.message.delete()
-        await ctx.send(f'【錯誤】**{ctx.author.mention}** 您沒有權限執行該命令!')
+        await ctx.send(f'【錯誤】**{ctx.author.mention}** 你沒權限拉 不要想執行了!')
         print(F'【指令】{ctx.author} 執行了一個他沒有權限執行的指令')
         await asyncio.sleep(3)
         await ctx.channel.purge(limit=1)
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.message.delete()
-        await ctx.send(f'【錯誤】**{ctx.author.mention}** 此指令需要一個參數!')
+        await ctx.send(f'【錯誤】**{ctx.author.mention}** 我要吃一個參數!')
         print(F'【指令】{ctx.author}  未輸入指令需要的參數')
         await asyncio.sleep(3)
         await ctx.channel.purge(limit=1)
     else:
         await ctx.message.delete()
-        await ctx.send(F'【錯誤】**{ctx.author.mention}** 發生了一個未知的錯誤! 請在試一次!')
+        await ctx.send(F'【錯誤】**{ctx.author.mention}** 發生了一個錯誤 可是我不知道發生了甚麼錯誤......')
         print(F'【指令】{ctx.author}  讓指令發生了未知的錯誤')
         await asyncio.sleep(3)
         await ctx.channel.purge(limit=1)'''
