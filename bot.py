@@ -23,7 +23,6 @@ async def on_ready():
 #錯誤通知
 '''@bot.event
 async def on_command_error(ctx, error):
-    if hasattr()
     if isinstance(error,commands.CommandNotFound):
         await ctx.message.delete()
         await ctx.send(f'【錯誤】**{ctx.author.mention}** 痾...... 好像沒有這東西喔!')
