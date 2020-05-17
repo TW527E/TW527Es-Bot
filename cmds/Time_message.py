@@ -13,9 +13,8 @@ class Time_message(Cog_Extension):
             await self.bot.wait_until_ready()
             self.channel = self.bot.get_channel(668698688578650113)
             while not self.bot.is_closed():
-                print('【公告-狀態】[900秒=15分鐘] 訊息:[我是 [苦力怕同學] 可以使用我喔!]')
                 await self.channel.send('我是 [苦力怕同學] 可以使用我喔!')
-                await asyncio.sleep(900) #單位 = 秒
+                await asyncio.sleep(7200) #單位 = 秒
 
         self.bg_time_message = self.bot.loop.create_task(interval())
     
