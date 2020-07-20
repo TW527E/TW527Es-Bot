@@ -5,7 +5,7 @@ import json, asyncio
 import os #導入os模組
 
 #讀取setting.json檔案
-with open('setting.json','r', encoding='utf8') as jfile:
+with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 #甚麼東西=甚麼
@@ -99,7 +99,7 @@ async def reload_all(ctx):
     print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
-    bot.reload_extension('cmds.Time_message')
+    '''bot.reload_extension('cmds.Time_message')'''
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')

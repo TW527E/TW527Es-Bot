@@ -52,6 +52,15 @@ class Message(Cog_Extension):
         now = datetime.datetime.now()
         await ctx.send(F'現在機器人的時間是 {now}')
     
+    #指令-avatar 顯示指令使用者頭像
+    @commands.command()
+    async def avatar(self, ctx, member: discord.Member=None):  
+        if not member:
+            member = ctx.message.author
+        show_avatar = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url)
+        show_avatar.set_image(url="{}".format(member.avatar_url))
+        show_avatar.set_footer(text=f'{member}')
+        await ctx.send(embed=show_avatar)
 
 def setup(bot):
     bot.add_cog(Message(bot))

@@ -42,14 +42,15 @@ class Help(Cog_Extension):
         embed.add_field(name="|MC", value="MC img 傳送隨機的 Minecraft 圖片", inline=False)
         embed.add_field(name="|url_img", value="MC img 傳送網路上隨機的 Minecraft 圖片", inline=True)
         embed.add_field(name="|now_time", value="now time 現在時間顯示", inline=False)
-        embed.add_field(name="-------------------", value="狀態指令", inline=True)
-        embed.add_field(name="@|shutdown", value="shutdown bot 關閉機器人", inline=False)
-        embed.add_field(name="@|online", value="online bot 上線機器人", inline=True)
-        embed.add_field(name="@|idle", value="idle bot 閒置機器人", inline=False)
-        embed.add_field(name="@|dnd", value="dnd bot 勿擾機器人", inline=True)
-        embed.add_field(name="-------------------", value="公告指令", inline=False)
-        embed.add_field(name="*|set_auto_ch <頻道ID>", value="set auto message channel 設定 發送公告訊息 頻道", inline=True)
-        embed.add_field(name="*|set_auto_time <時間>", value="set auto message time 設定 發送公告訊息 的秒數", inline=False)
+        embed.add_field(name="|avatar", value="avatar 顯示指令使用者頭像", inline=True)
+        embed.add_field(name="-------------------", value="狀態指令", inline=False)
+        embed.add_field(name="@|shutdown", value="shutdown bot 關閉機器人", inline=True)
+        embed.add_field(name="@|online", value="online bot 上線機器人", inline=False)
+        embed.add_field(name="@|idle", value="idle bot 閒置機器人", inline=True)
+        embed.add_field(name="@|dnd", value="dnd bot 勿擾機器人", inline=False)
+        embed.add_field(name="-------------------", value="公告指令", inline=True)
+        embed.add_field(name="*|set_auto_ch <頻道ID>", value="set auto message channel 設定 發送公告訊息 頻道", inline=False)
+        embed.add_field(name="*|set_auto_time <時間>", value="set auto message time 設定 發送公告訊息 的秒數", inline=True)
         await ctx.send(embed=embed)
 
     #指令-指令幫助2
@@ -83,6 +84,7 @@ class Help(Cog_Extension):
         embed.add_field(name="event.Msg", value="自動回覆訊息", inline=False)
         embed.add_field(name="cmds.Help", value="指令提示幫助", inline=True)
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Help(bot))

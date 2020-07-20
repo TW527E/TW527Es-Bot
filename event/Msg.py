@@ -28,8 +28,21 @@ class Msg(Cog_Extension):
         keyword = ['Fuck', 'FUck', 'FUCk', 'FUCK', 'fUCK', 'fuCK', 'fucK', 'fuck', 'fUck', 'fUCk', 'fUCK', 'FUck', 'FUCk', 'FuCk', 'FUcK', 'FuCk', '幹你娘', '操你媽', '幹', '看屁阿鄉巴佬']
         if msg.content in keyword and msg.author !=self.bot.user:
             await msg.delete()
-            await msg.channel.send(F'【警告】請勿輸入相關不雅詞語!  懲罰: 警告x1')
+            self.channel = self.bot.get_channel(669130768072704002)
+            await self.channel.send(F'『{msg.author.mention}』請勿輸入相關不雅詞語!  懲罰: 警告x1')
             print('有人打入了 [不雅的詞語] 因此 觸發了[警告機制]')
+    
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, msg):
+        counter = 1
+        async for auditlog in msg.guild.audit_logs(action=discord.AuditLogAction.message_delete):
+            if counter == 1:
+                ch = self.bot.get_channel(734584788710850641)
+                await ch.send(auditlog.user.name)
+                counter += 1
+
+            #await channel.send(F'使用者『{msg.author}』 刪除了 〔{msg.content}〕')
 
 def setup(bot):
     bot.add_cog(Msg(bot))
