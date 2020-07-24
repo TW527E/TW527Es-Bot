@@ -3,16 +3,14 @@ import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 import json, asyncio
 import os #導入os模組
-import keep_alive #導入 keep_alive
 
 #讀取setting.json檔案
-with open('setting.json','r', encoding='utf8') as jfile:
+with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 #甚麼東西=甚麼
 bot = commands.Bot(command_prefix="|")
 bot.remove_command('help')
-
 
 #機器人上線
 @bot.event
@@ -23,7 +21,6 @@ async def on_ready():
     await channel.send("《 **__TaiwanMC-苦力怕同學__** 》上線了")
 
 #錯誤通知
-
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error,commands.CommandNotFound):
@@ -102,7 +99,7 @@ async def reload_all(ctx):
     print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
-    bot.reload_extension('cmds.Time_message')
+    '''bot.reload_extension('cmds.Time_message')'''
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')
@@ -125,6 +122,6 @@ for Filename in os.listdir('./event'):
         bot.load_extension(F'event.{Filename[:-3]}')
 
 if __name__ == "__main__":
-    keep_alive.keep_alive()
     #Token-金鑰(setting.json)
     bot.run(jdata['Token'])
+
