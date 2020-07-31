@@ -1,7 +1,0 @@
-discord.py
-discord.py[voice]
-Flask
-gunicorn
-pynacl
-django
-django-heroku

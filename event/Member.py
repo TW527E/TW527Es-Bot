@@ -17,7 +17,7 @@ class member(Cog_Extension):
         if member.guild.id == 447628147286999042:
             print(F'> 〔{member}〕 加入了伺服器')
             channel = self.bot.get_channel(int(jdata['member_join_channel']))
-            embed=discord.Embed(title=F"『{member.mention}』 加入了伺服器", color=0xd08a2b)
+            embed=discord.Embed(title=F"『{member}』 加入了伺服器", color=0xd08a2b)
             embed.set_thumbnail(url="{}".format(member.avatar_url))
             await channel.send(embed=embed)
             '''await channel.send(F'>> {member.mention} << 加入了伺服器')'''
