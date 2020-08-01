@@ -36,7 +36,7 @@ class Voice(Cog_Extension):
                     song_there = os.path.isfile("song.mp3")
                     if song_there:
                         os.remove("song.mp3")
-                    os.shutil.move(song_path, main_location)
+                    shutil.move(song_path, main_location)
                     for file in os.listdir("./"):
                         if file.endswith(".mp3"):
                             os.rename(file, 'song.mp3')
@@ -72,11 +72,13 @@ class Voice(Cog_Extension):
             Queue_folder = "./Queue"
             if Queue_infile is True:
                 print("『音樂』刪除舊的播放清單")
-                os.shutil.rmtree(Queue_folder)
+                shutil.rmtree(Queue_folder)
         except:
             print("『音樂』沒有播放清單")
 
         await ctx.send("『音樂』音樂下載中")
+
+        voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         ydl_opts = {
             'format': 'bestaudio/best',
