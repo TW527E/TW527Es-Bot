@@ -55,6 +55,13 @@ class Main(Cog_Extension):
                 await ctx.send(F'使用者 >>**{user}**<< 已經解除封鎖')
                 return
 
+    #指令-rename
+    @commands.command(pass_context=True)
+    @commands.has_permissions(administrator=True)
+    async def rename(self, ctx, member: discord.Member, *,name):
+        await ctx.message.delete()
+        await member.edit(nick=name)
+        await ctx.send(f'『更改名稱』**{member.name}** 的暱稱已被變更為: **"{name}"** ')
 
 def setup(bot):
     bot.add_cog(Main(bot))

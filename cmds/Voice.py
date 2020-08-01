@@ -3,6 +3,7 @@ import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 from core.classes import Cog_Extension #導入Cog_extension 的定義
 from discord.utils import get
+import shutil
 import youtube_dl
 import spotdl
 import os
@@ -63,7 +64,7 @@ class Voice(Cog_Extension):
                 print("『音樂』刪除舊的音樂檔案")
         except PermissionError:
             print("『音樂』正在嘗試刪除音樂 可是他還在播")
-            await ctx.send("『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
+            await ctx.send(":musical_note:『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
             return
 
 
@@ -76,7 +77,7 @@ class Voice(Cog_Extension):
         except:
             print("『音樂』沒有播放清單")
 
-        await ctx.send("『音樂』音樂下載中")
+        await ctx.send(":musical_note:『音樂』音樂下載中")
 
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -107,10 +108,11 @@ class Voice(Cog_Extension):
         voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
         voice.source = discord.PCMVolumeTransformer(voice.source)
         voice.source.volume = 0.7
-
-        nname = name.rsplit("-", 2)
-        await ctx.send(f"『音樂』目前播放音樂: {nname[0]}")
-        print(F"『音樂』目前播放音樂: {nname[0]}")
+        
+        nname = str(name)
+        #nname = name.rsplit("-")
+        await ctx.send(f":musical_note:『音樂』目前播放音樂: {nname[:-16]}")
+        print(F"『音樂』目前播放音樂: {nname[:-16]}")
 
     #指令-pause 暫停音樂
     @commands.command(pass_context=True, aliases=['pa', 'pau', 'paus'])
@@ -121,10 +123,10 @@ class Voice(Cog_Extension):
         if voice and voice.is_playing():
             print("『音樂』音樂已暫停")
             voice.pause()
-            await ctx.send("『音樂』音樂已暫停")
+            await ctx.send(":musical_note:『音樂』音樂已暫停")
         else:
             print("『音樂』音樂沒再播放 所以無法暫停")
-            await ctx.send("『音樂』音樂沒再播放 所以無法暫停")
+            await ctx.send(":musical_note:『音樂』音樂沒再播放 所以無法暫停")
 
     #指令-resume 繼續播放
     @commands.command(pass_context=True, aliases=['r', 'res', 'resum'])
@@ -135,10 +137,10 @@ class Voice(Cog_Extension):
         if voice and voice.is_paused():
             print("『音樂』音樂繼續播放")
             voice.resume()
-            await ctx.send("『音樂』音樂繼續播放")
+            await ctx.send(":musical_note:『音樂』音樂繼續播放")
         else:
             print("『音樂』沒有音樂已暫停")
-            await ctx.send("『音樂』沒有音樂已暫停")
+            await ctx.send(":musical_note:『音樂』沒有音樂已暫停")
 
     #指令-stop 停止播放音樂
     @commands.command(pass_context=True, aliases=['s', 'sto'])
@@ -149,10 +151,10 @@ class Voice(Cog_Extension):
         if voice and voice.is_playing():
             print("『音樂』音樂已停止播放")
             voice.stop()
-            await ctx.send("『音樂』音樂已停止播放")
+            await ctx.send(":musical_note:『音樂』音樂已停止播放")
         else:
             print("『音樂』音樂沒再播放 所以無法停止播放")
-            await ctx.send("『音樂』音樂沒再播放 所以無法停止播放")
+            await ctx.send(":musical_note:『音樂』音樂沒再播放 所以無法停止播放")
     
     #指令-queue 播放清單
     @commands.command(pass_context=True, aliases=['q', 'que'])
@@ -187,7 +189,7 @@ class Voice(Cog_Extension):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             print("『音樂』正在下載播放清單的音樂\n")
             ydl.download([url])
-        await ctx.send("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單")
+        await ctx.send(F":musical_note:『音樂』已加入音樂" + "str(q_num)" + "到播放清單")
 
         print("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單\n")
 
@@ -202,10 +204,10 @@ class Voice(Cog_Extension):
             print(volume/100)
 
             ctx.voice_client.source.volume = volume / 100
-            await ctx.send(f"『音樂』已調整音量為 {volume}%")
+            await ctx.send(f":musical_note:『音樂』已調整音量為 **{volume}%**")
         
         else:
-            await ctx.send(f"『音樂』你太超過了喔 {volume}% 你瘋了?")
+            await ctx.send(f":musical_note:『音樂』你太超過了喔 **{volume}%** 你瘋了?")
 
     #指令-next 
     @commands.command(pass_context=True, aliases=['n', 'nex'])

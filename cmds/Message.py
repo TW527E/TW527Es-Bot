@@ -58,9 +58,8 @@ class Message(Cog_Extension):
         print(f'【指令】〔{ctx.author}〕 輸入 [avatar] 使機器人加入頻道')
         if not member:
             member = ctx.message.author
-        show_avatar = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url)
+        show_avatar = discord.Embed(title=F"{member}", description="[點此到達頭像連結](%s)" % member.avatar_url, color=0xd08a2b)
         show_avatar.set_image(url="{}".format(member.avatar_url))
-        show_avatar.set_footer(text=f'{member}')
         await ctx.send(embed=show_avatar)
 
 def setup(bot):
