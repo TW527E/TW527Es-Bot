@@ -55,5 +55,6 @@ class Main(Cog_Extension):
                 await ctx.send(F'使用者 >>**{user}**<< 已經解除封鎖')
                 return
 
+
 def setup(bot):
     bot.add_cog(Main(bot))
