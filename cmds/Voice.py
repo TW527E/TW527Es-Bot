@@ -15,7 +15,7 @@ class Voice(Cog_Extension):
     #指令-play 播放音樂
     @commands.command(pass_context=True, aliases=['p', 'pla'])
     async def play(self, ctx, url: str):
-
+        
         def check_queue():
             Queue_infile = os.path.isdir("./Queue")
             if Queue_infile is True:
@@ -77,8 +77,6 @@ class Voice(Cog_Extension):
             print("『音樂』沒有播放清單")
 
         await ctx.send("『音樂』音樂下載中")
-
-        voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         ydl_opts = {
             'format': 'bestaudio/best',

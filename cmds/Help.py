@@ -18,8 +18,9 @@ class Help(Cog_Extension):
         embed.add_field(name="|help", value="指令提示幫助", inline=False)
         embed.add_field(name="|help1", value="指令提示幫助1", inline=True)
         embed.add_field(name="|help2", value="指令提示幫助2", inline=False)
-        embed.add_field(name="-------------------", value="其他指令", inline=True)
-        embed.add_field(name="@|invite", value="獲取機器人邀請碼", inline=False)
+        embed.add_field(name="|help3", value="指令提示幫助 音樂分類 ", inline=True)
+        embed.add_field(name="-------------------", value="其他指令", inline=False)
+        embed.add_field(name="@|invite", value="獲取機器人邀請碼", inline=True)
         await ctx.send(embed=embed)
 
     #指令-指令幫助1
@@ -85,6 +86,24 @@ class Help(Cog_Extension):
         embed.add_field(name="cmds.Help", value="指令提示幫助", inline=True)
         await ctx.send(embed=embed)
 
+    #指令-指令幫助1
+    @commands.command()
+    async def help3(self, ctx):
+        print(F'《指令》〔{ctx.author}〕 輸入 [help3 指令提示幫助 音樂分類] 指令')
+        await ctx.message.delete()
+        embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助 音樂分類↓", color=0xd08a2b)
+        embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
+        embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=False)
+        embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=True)
+        embed.add_field(name="-------------------", value="音樂指令", inline=False)
+        embed.add_field(name="|play <音樂連結>", value="播放音樂", inline=True)
+        embed.add_field(name="|stop", value="停止播放音樂", inline=False)
+        embed.add_field(name="|pause", value="暫停音樂", inline=True)
+        embed.add_field(name="|resume", value="繼續播放音樂", inline=False)
+        embed.add_field(name="|queue <音樂連結>", value="新增音樂", inline=True)
+        embed.add_field(name="|volume <音量大小 單位:%>", value="調整音量大小", inline=False)
+        embed.add_field(name="|next", value="下一首音樂", inline=True)
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Help(bot))
