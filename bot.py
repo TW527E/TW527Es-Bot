@@ -100,6 +100,7 @@ async def reload_all(ctx):
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
     '''bot.reload_extension('cmds.Time_message')'''
+    bot.reload_extension('cmds.voice')
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')

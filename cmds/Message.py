@@ -55,6 +55,7 @@ class Message(Cog_Extension):
     #指令-avatar 顯示指令使用者頭像
     @commands.command()
     async def avatar(self, ctx, member: discord.Member=None):  
+        print(f'【指令】〔{ctx.author}〕 輸入 [avatar] 使機器人加入頻道')
         if not member:
             member = ctx.message.author
         show_avatar = discord.Embed(description="[Avatar URL](%s)" % member.avatar_url)
