@@ -36,7 +36,7 @@ class Voice(Cog_Extension):
                     song_there = os.path.isfile("song.mp3")
                     if song_there:
                         os.remove("song.mp3")
-                    shutil.move(song_path, main_location)
+                    os.shutil.move(song_path, main_location)
                     for file in os.listdir("./"):
                         if file.endswith(".mp3"):
                             os.rename(file, 'song.mp3')
@@ -72,7 +72,7 @@ class Voice(Cog_Extension):
             Queue_folder = "./Queue"
             if Queue_infile is True:
                 print("『音樂』刪除舊的播放清單")
-                shutil.rmtree(Queue_folder)
+                os.shutil.rmtree(Queue_folder)
         except:
             print("『音樂』沒有播放清單")
 
@@ -187,7 +187,7 @@ class Voice(Cog_Extension):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             print("『音樂』正在下載播放清單的音樂\n")
             ydl.download([url])
-        await ctx.send("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單")
+        await ctx.send("『音樂』已加入音樂" + "  str(q_num) " + "到播放清單")
 
         print("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單\n")
 
