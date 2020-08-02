@@ -189,7 +189,7 @@ class Voice(Cog_Extension):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             print("『音樂』正在下載播放清單的音樂\n")
             ydl.download([url])
-        await ctx.send(F":musical_note:『音樂』已加入音樂" + "str(q_num)" + "到播放清單")
+        await ctx.send(F":musical_note:『音樂』已加入音樂" + str(q_num) + "到播放清單")
 
         print("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單\n")
 
