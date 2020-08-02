@@ -16,7 +16,7 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     print('《 TaiwanMC-苦力怕同學 》機器人 上線了')
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game('|help 獲取指令提示幫助'))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="|help 獲取指令提示幫助"))
     channel = bot.get_channel(int(jdata['bot_ready_channel']))
     await channel.send("《 **__TaiwanMC-苦力怕同學__** 》上線了")
 
@@ -99,7 +99,8 @@ async def reload_all(ctx):
     print(F'〔{ctx.author}〕 輸入 [重新載入 全部] 指令')
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
-    '''bot.reload_extension('cmds.Time_message')'''
+    bot.reload_extension('cmds.Time_message')
+    bot.reload_extension('cmds.voice')
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')
@@ -124,4 +125,3 @@ for Filename in os.listdir('./event'):
 if __name__ == "__main__":
     #Token-金鑰(setting.json)
     bot.run(jdata['Token'])
-

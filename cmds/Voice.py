@@ -7,6 +7,7 @@ import shutil
 import youtube_dl
 import spotdl
 import os
+import json
 
 players = {}
 queues = {}
@@ -16,103 +17,217 @@ class Voice(Cog_Extension):
     #指令-play 播放音樂
     @commands.command(pass_context=True, aliases=['p', 'pla'])
     async def play(self, ctx, url: str):
-        
-        def check_queue():
-            Queue_infile = os.path.isdir("./Queue")
-            if Queue_infile is True:
-                DIR = os.path.abspath(os.path.realpath("Queue"))
-                length = len(os.listdir(DIR))
-                still_q = length - 1
-                try:
-                    first_file = os.listdir(DIR)[0]
-                except:
-                    print("『音樂』沒有音樂在播放清單(s)\n")
-                    queues.clear()
-                    return
-                main_location = os.path.dirname(os.path.realpath(__file__))
-                song_path = os.path.abspath(os.path.realpath("Queue") + "\\" + first_file)
-                if length != 0:
-                    print("『音樂』歌曲已播放完畢 下一首歌繼續\n")
-                    print(f"『音樂』以下歌曲還在清單裡: {still_q}")
-                    song_there = os.path.isfile("song.mp3")
-                    if song_there:
-                        os.remove("song.mp3")
-                    shutil.move(song_path, main_location)
-                    for file in os.listdir("./"):
-                        if file.endswith(".mp3"):
-                            os.rename(file, 'song.mp3')
+        print(F'『音樂』〔{ctx.author}〕 輸入 [play - 播放音樂] 指令 連結為:[{url}]')
+        channel = ctx.author.voice.channel  
+        voice = get(self.bot.voice_clients, guild=ctx.guild)
+        if voice and voice.is_connected():
+            def check_queue():
+                Queue_infile = os.path.isdir("./Queue")
+                if Queue_infile is True:
+                    DIR = os.path.abspath(os.path.realpath("Queue"))
+                    length = len(os.listdir(DIR))
+                    still_q = length - 1
+                    try:
+                        first_file = os.listdir(DIR)[0]
+                    except:
+                        print("『音樂』沒有音樂在播放清單(s)\n")
+                        queues.clear()
+                        return
+                    main_location = os.path.dirname(os.path.realpath(__file__))
+                    song_path = os.path.abspath(os.path.realpath("Queue") + "\\" + first_file)
+                    if length != 0:
+                        print("『音樂』歌曲已播放完畢 下一首歌繼續\n")
+                        print(f"『音樂』以下歌曲還在清單裡: {still_q}")
+                        song_there = os.path.isfile("song.mp3")
+                        if song_there:
+                            os.remove("song.mp3")
+                        shutil.move(song_path, main_location)
+                        for file in os.listdir("./"):
+                            if file.endswith(".mp3"):
+                                os.rename(file, 'song.mp3')
 
-                    voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
-                    voice.source = discord.PCMVolumeTransformer(voice.source)
-                    voice.source.volume = 0.7
+                        voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
+                        voice.source = discord.PCMVolumeTransformer(voice.source)
+                        voice.source.volume = 0.7
+
+                    else:
+                        queues.clear()
+                        return
 
                 else:
                     queues.clear()
-                    return
-
-            else:
-                queues.clear()
-                print("『音樂』最後一首歌結束前沒有歌曲在排隊\n")
+                    print("『音樂』最後一首歌結束前沒有歌曲在排隊\n")
 
 
 
-        song_there = os.path.isfile("song.mp3")
-        try:
-            if song_there:
-                os.remove("song.mp3")
-                queues.clear()
-                print("『音樂』刪除舊的音樂檔案")
-        except PermissionError:
-            print("『音樂』正在嘗試刪除音樂 可是他還在播")
-            await ctx.send(":musical_note:『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
-            return
+            song_there = os.path.isfile("song.mp3")
+            try:
+                if song_there:
+                    os.remove("song.mp3")
+                    queues.clear()
+                    print("『音樂』刪除舊的音樂檔案")
+            except PermissionError:
+                print("『音樂』正在嘗試刪除音樂 可是他還在播")
+                await ctx.send(":musical_note:『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
+                return
 
 
-        Queue_infile = os.path.isdir("./Queue")
-        try:
-            Queue_folder = "./Queue"
-            if Queue_infile is True:
-                print("『音樂』刪除舊的播放清單")
-                shutil.rmtree(Queue_folder)
-        except:
-            print("『音樂』沒有播放清單")
+            Queue_infile = os.path.isdir("./Queue")
+            try:
+                Queue_folder = "./Queue"
+                if Queue_infile is True:
+                    print("『音樂』刪除舊的播放清單")
+                    shutil.rmtree(Queue_folder)
+            except:
+                print("『音樂』沒有播放清單")
 
-        await ctx.send(":musical_note:『音樂』音樂下載中")
+            await ctx.send(":musical_note:『音樂』音樂下載中")
 
-        voice = get(self.bot.voice_clients, guild=ctx.guild)
+            voice = get(self.bot.voice_clients, guild=ctx.guild)
 
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'quiet': True,
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-        }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                print("『音樂』音樂下載中\n")
-                ydl.download([url])
-        except:
-            print("『音樂』錯誤 機器人不支持這個連結 (Spotify 的話是正常的)")
-            c_path = os.path.dirname(os.path.realpath(__file__))
-            os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'quiet': True,
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            }
+            try:
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    print("『音樂』音樂下載中\n")
+                    ydl.download([url])
+            except:
+                print("『音樂』錯誤 機器人不支持這個連結 (Spotify 的話是正常的)")
+                c_path = os.path.dirname(os.path.realpath(__file__))
+                os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
 
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                name = file
-                print(f"『音樂』重新命名檔案: {file}\n")
-                os.rename(file, "song.mp3")
+            for file in os.listdir("./"):
+                if file.endswith(".mp3"):
+                    name = file
+                    print(f"『音樂』重新命名檔案: {file}\n")
+                    os.rename(file, "song.mp3")
 
-        voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
-        voice.source = discord.PCMVolumeTransformer(voice.source)
-        voice.source.volume = 0.7
-        
-        nname = str(name)
-        #nname = name.rsplit("-")
-        await ctx.send(f":musical_note:『音樂』目前播放音樂: {nname[:-16]}")
-        print(F"『音樂』目前播放音樂: {nname[:-16]}")
+            voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
+            voice.source = discord.PCMVolumeTransformer(voice.source)
+            with open('setting.json', mode='r', encoding='utf8') as jfile:
+                jdata = json.load(jfile)
+            voice.source.volume = jdata['volume']
+            
+            nname = str(name)
+            #nname = name.rsplit("-")
+            embed=discord.Embed(title="------------------", color=0x28d252)
+            embed.set_author(name="新增音樂")
+            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
+            embed.add_field(name="音樂名稱:", value=F"{nname[:-16]}", inline=True)
+            await ctx.send(embed=embed)
+            print(F"『音樂』目前播放音樂: {nname[:-16]}")
+        else:
+            await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
+            await channel.connect()
+            def check_queue():
+                Queue_infile = os.path.isdir("./Queue")
+                if Queue_infile is True:
+                    DIR = os.path.abspath(os.path.realpath("Queue"))
+                    length = len(os.listdir(DIR))
+                    still_q = length - 1
+                    try:
+                        first_file = os.listdir(DIR)[0]
+                    except:
+                        print("『音樂』沒有音樂在播放清單(s)\n")
+                        queues.clear()
+                        return
+                    main_location = os.path.dirname(os.path.realpath(__file__))
+                    song_path = os.path.abspath(os.path.realpath("Queue") + "\\" + first_file)
+                    if length != 0:
+                        print("『音樂』歌曲已播放完畢 下一首歌繼續\n")
+                        print(f"『音樂』以下歌曲還在清單裡: {still_q}")
+                        song_there = os.path.isfile("song.mp3")
+                        if song_there:
+                            os.remove("song.mp3")
+                        shutil.move(song_path, main_location)
+                        for file in os.listdir("./"):
+                            if file.endswith(".mp3"):
+                                os.rename(file, 'song.mp3')
+
+                        voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
+                        voice.source = discord.PCMVolumeTransformer(voice.source)
+                        voice.source.volume = 0.7
+
+                    else:
+                        queues.clear()
+                        return
+
+                else:
+                    queues.clear()
+                    print("『音樂』最後一首歌結束前沒有歌曲在排隊\n")
+
+
+
+            song_there = os.path.isfile("song.mp3")
+            try:
+                if song_there:
+                    os.remove("song.mp3")
+                    queues.clear()
+                    print("『音樂』刪除舊的音樂檔案")
+            except PermissionError:
+                print("『音樂』正在嘗試刪除音樂 可是他還在播")
+                await ctx.send(":musical_note:『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
+                return
+
+
+            Queue_infile = os.path.isdir("./Queue")
+            try:
+                Queue_folder = "./Queue"
+                if Queue_infile is True:
+                    print("『音樂』刪除舊的播放清單")
+                    shutil.rmtree(Queue_folder)
+            except:
+                print("『音樂』沒有播放清單")
+
+            await ctx.send(":musical_note:『音樂』音樂下載中")
+
+            voice = get(self.bot.voice_clients, guild=ctx.guild)
+
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'quiet': True,
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            }
+            try:
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    print("『音樂』音樂下載中\n")
+                    ydl.download([url])
+            except:
+                print("『音樂』錯誤 機器人不支持這個連結 (Spotify 的話是正常的)")
+                c_path = os.path.dirname(os.path.realpath(__file__))
+                os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
+
+            for file in os.listdir("./"):
+                if file.endswith(".mp3"):
+                    name = file
+                    print(f"『音樂』重新命名檔案: {file}\n")
+                    os.rename(file, "song.mp3")
+
+            voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
+            voice.source = discord.PCMVolumeTransformer(voice.source)
+            with open('setting.json', mode='r', encoding='utf8') as jfile:
+                jdata = json.load(jfile)
+            voice.source.volume = jdata['volume']
+                
+            nname = str(name)
+            #nname = name.rsplit("-")
+            embed=discord.Embed(title="------------------", color=0x28d252)
+            embed.set_author(name="新增音樂")
+            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
+            embed.add_field(name="音樂名稱:", value=F"{nname[:-16]}", inline=True)
+            await ctx.send(embed=embed)
+            print(F"『音樂』目前播放音樂: {nname[:-16]}")
 
     #指令-pause 暫停音樂
     @commands.command(pass_context=True, aliases=['pa', 'pau', 'paus'])
@@ -188,10 +303,11 @@ class Voice(Cog_Extension):
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             print("『音樂』正在下載播放清單的音樂\n")
+            await ctx.send(":musical_note:『音樂』正在下載播放清單的音樂")
             ydl.download([url])
-        await ctx.send(F":musical_note:『音樂』已加入音樂" + str(q_num) + "到播放清單")
+        await ctx.send(":musical_note:『音樂』已加入音樂 排隊中 為" + str(q_num))
 
-        print("『音樂』已加入音樂" + " + str(q_num) + " + "到播放清單\n")
+        print("『音樂』已加入音樂 排隊中 為" + str(q_num))
 
     #指令-volume 音量
     @commands.command(pass_context=True, aliases=['v', 'vol', 'volum'])
@@ -201,7 +317,13 @@ class Voice(Cog_Extension):
             if ctx.voice_client is None:
                 return await ctx.send("『音樂』還沒連結到語音頻道")
 
-            print(volume/100)
+            print('『音樂』音量:' + str(volume/100))
+            with open('setting.json', mode='r', encoding='utf8') as jfile:
+                jdata = json.load(jfile)
+            volume0 = volume/100
+            jdata['volume'] = volume0
+            with open('setting.json', mode='w', encoding='utf8') as jfile:
+                json.dump(jdata, jfile, indent=11)
 
             ctx.voice_client.source.volume = volume / 100
             await ctx.send(f":musical_note:『音樂』已調整音量為 **{volume}%**")

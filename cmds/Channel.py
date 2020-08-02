@@ -4,6 +4,7 @@ from discord.ext import commands  #導入指令
 from core.classes import Cog_Extension #導入Cog_extension 的定義
 import os
 import nacl
+import json
 
 class Channel(Cog_Extension):
     

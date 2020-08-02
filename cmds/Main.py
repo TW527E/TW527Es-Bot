@@ -63,5 +63,15 @@ class Main(Cog_Extension):
         await member.edit(nick=name)
         await ctx.send(f'『更改名稱』**{member.name}** 的暱稱已被變更為: **"{name}"** ')
 
+
+    #指令-set_server_name
+    @commands.command(pass_context=True)
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def set_server_name(self, ctx, *,text):
+        await ctx.message.delete()
+        await ctx.guild.edit(name=text)
+        await ctx.send(f'{ctx.author.mention} 變更了群的名字\n此群的的名稱已被變更為: **"{text}"** ')
+
 def setup(bot):
     bot.add_cog(Main(bot))
