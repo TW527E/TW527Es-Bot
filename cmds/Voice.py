@@ -115,14 +115,18 @@ class Voice(Cog_Extension):
                 jdata = json.load(jfile)
             voice.source.volume = jdata['volume']
             
-            nname = str(name)
-            #nname = name.rsplit("-")
+            vvolume = jdata['volume']*100
+            #nname = str(name)
+            #nname = ''.join(name.split('-'))[:-4]
+            loc = name.rfind('-')
+            nname = name[:loc]
             embed=discord.Embed(title="------------------", color=0x28d252)
             embed.set_author(name="新增音樂")
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
-            embed.add_field(name="音樂名稱:", value=F"{nname[:-16]}", inline=True)
+            embed.add_field(name="音樂名稱:", value=F"{nname}", inline=True)
+            embed.add_field(name="目前音量", value=F"{vvolume}", inline=True)
             await ctx.send(embed=embed)
-            print(F"『音樂』目前播放音樂: {nname[:-16]}")
+            print(F"『音樂』目前播放音樂: {nname} 音量:{vvolume}%")
         else:
             await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
             await channel.connect()
@@ -220,14 +224,18 @@ class Voice(Cog_Extension):
                 jdata = json.load(jfile)
             voice.source.volume = jdata['volume']
                 
-            nname = str(name)
-            #nname = name.rsplit("-")
+            vvolume = jdata['volume']*100
+            #nname = str(name)
+            #nname = ''.join(name.split('-'))[:-4]
+            loc = name.rfind('-')
+            nname = name[:loc]
             embed=discord.Embed(title="------------------", color=0x28d252)
             embed.set_author(name="新增音樂")
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
-            embed.add_field(name="音樂名稱:", value=F"{nname[:-16]}", inline=True)
+            embed.add_field(name="音樂名稱:", value=F"{nname}", inline=True)
+            embed.add_field(name="目前音量", value=F"{vvolume}", inline=True)
             await ctx.send(embed=embed)
-            print(F"『音樂』目前播放音樂: {nname[:-16]}")
+            print(F"『音樂』目前播放音樂: {nname} 音量:{vvolume}%")
 
     #指令-pause 暫停音樂
     @commands.command(pass_context=True, aliases=['pa', 'pau', 'paus'])
@@ -326,10 +334,10 @@ class Voice(Cog_Extension):
                 json.dump(jdata, jfile, indent=11)
 
             ctx.voice_client.source.volume = volume / 100
-            await ctx.send(f":musical_note:『音樂』已調整音量為 **{volume}%**")
+            await ctx.send(f"『音樂』:loud_sound:已調整音量為 `**{volume}%**`")
         
         else:
-            await ctx.send(f":musical_note:『音樂』你太超過了喔 **{volume}%** 你瘋了?")
+            await ctx.send(f"『音樂』:loud_sound:你太超過了喔 `**{volume}%**` 你瘋了?")
 
     #指令-next 
     @commands.command(pass_context=True, aliases=['n', 'nex'])

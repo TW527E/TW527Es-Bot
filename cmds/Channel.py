@@ -8,17 +8,19 @@ import json
 
 class Channel(Cog_Extension):
     
-    @commands.command(aliases=['j', 'joi'])
+    @commands.command(aliases=['j', 'joi', 'summon'])
     async def join(self, ctx):
         print(f'《語音頻道》〔{ctx.author}〕 輸入 [join] 使機器人加入頻道')
+        await ctx.message.delete()
         channel = ctx.author.voice.channel
         await channel.connect()
         await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
 
 
-    @commands.command(aliases=['l', 'lea', 'leav'])
+    @commands.command(aliases=['l', 'lea', 'leav', 'kill'])
     async def leave(self, ctx):
         print(f'《語音頻道》〔{ctx.author}〕 輸入 [leave] 使機器人退出頻道')
+        await ctx.message.delete()
         await ctx.voice_client.disconnect()
         await ctx.send('《語音頻道》已退出 **語音頻道**')
 

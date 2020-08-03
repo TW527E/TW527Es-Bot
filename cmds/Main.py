@@ -5,6 +5,14 @@ from core.classes import Cog_Extension #導入Cog_extension 的定義
 
 class Main(Cog_Extension):
 
+    @commands.command()
+    async def aue(self, ctx):
+        input = "192.168.0.100" 
+        loc = input.rfind('.')
+        inputShort = input[:loc]
+        print(loc)
+        print(inputShort)
+        
     #指令-cmd 控制台指令
     @commands.command()
     @commands.is_owner()
