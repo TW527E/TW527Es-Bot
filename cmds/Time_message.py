@@ -12,15 +12,15 @@ class Time_message(Cog_Extension):
         async def interval():
             await self.bot.wait_until_ready()
             while not self.bot.is_closed():
-                if discord.Status.online == online:
+                if discord.Status.online:
                     await self.bot.change_presence(status=discord.Status.online, activity=discord.Activity(name="|help 獲取指令提示幫助", type=discord.ActivityType.watching))
-                    await asyncio.sleep(7)
-                if discord.Status.online == online:
+                    await asyncio.sleep(3)
+                if discord.Status.online:
                     await self.bot.change_presence(status=discord.Status.online, activity=discord.Activity(name="我是最帥的苦力怕", type=discord.ActivityType.watching))
-                    await asyncio.sleep(7)
-                if discord.Status.online == online:
+                    await asyncio.sleep(3)
+                if discord.Status.online:
                     await self.bot.change_presence(status=discord.Status.online, activity=discord.Activity(name="作者:誠誠 - TW527E#8668", type=discord.ActivityType.watching))
-                    await asyncio.sleep(7)
+                    await asyncio.sleep(3)
 
         self.bg_time_message = self.bot.loop.create_task(interval())
     

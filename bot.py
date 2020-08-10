@@ -49,7 +49,7 @@ async def on_command_error(ctx, error):
         await ctx.channel.purge(limit=1)'''
 
 #指令
-#指令-invite
+#指令 - invite
 @bot.command()
 @commands.is_owner()
 async def invite(ctx):
@@ -59,7 +59,7 @@ async def invite(ctx):
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#指令-load
+#指令 - load
 @bot.command()
 @commands.is_owner()
 async def load(ctx, Exception):
@@ -70,7 +70,7 @@ async def load(ctx, Exception):
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#指令-unload
+#指令 - unload
 @bot.command()
 @commands.is_owner()
 async def unload(ctx, Exception):
@@ -81,7 +81,7 @@ async def unload(ctx, Exception):
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#指令-reload
+#指令 - reload
 @bot.command()
 @commands.is_owner()
 async def reload(ctx, Exception):
@@ -92,7 +92,7 @@ async def reload(ctx, Exception):
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#指令-reload_all
+#指令 - reload_all
 @bot.command()
 @commands.is_owner()
 async def reload_all(ctx):
@@ -100,29 +100,34 @@ async def reload_all(ctx):
     await ctx.message.delete()
     bot.reload_extension('cmds.Main')
     bot.reload_extension('cmds.Time_message')
-    bot.reload_extension('cmds.voice')
+    bot.reload_extension('cmds.Voice')
     bot.reload_extension('cmds.Message')
     bot.reload_extension('cmds.Status')
     bot.reload_extension('cmds.Music')
     bot.reload_extension('cmds.Channel')
+    bot.reload_extension('cmds.Help')
+    bot.reload_extension('cmds.Server')
     bot.reload_extension('event.Msg')
     bot.reload_extension('event.Member')
-    bot.reload_extension('cmds.Help')
     await ctx.send(F'重新載入 **全部** 完成!')
     await asyncio.sleep(3)
     await ctx.channel.purge(limit=1)
 
-#導入指令- cmds
+#導入指令 - cmds
 for Filename in os.listdir('./cmds'):
     if Filename.endswith('.py'):
         bot.load_extension(F'cmds.{Filename[:-3]}')
 
-#導入指令- event
+#導入指令 - event
 for Filename in os.listdir('./event'):
     if Filename.endswith('.py'):
         bot.load_extension(F'event.{Filename[:-3]}')
 
+#導入指令 - event
+for Filename in os.listdir('./server'):
+    if Filename.endswith('.py'):
+        bot.load_extension(F'server.{Filename[:-3]}')
+
 if __name__ == "__main__":
     #Token-金鑰(setting.json)
     bot.run(jdata['Token'])
-

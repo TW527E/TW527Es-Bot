@@ -34,10 +34,10 @@ class Channel(Cog_Extension):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def add_voice_ch(self, ctx, *, msg):
+    async def add_voice_ch(self, ctx, category=None, *, msg):
         guild = ctx.message.guild
         print(f'《語音頻道》創建名為 {msg} 語音頻道 在 **{guild}** 伺服器')
-        await guild.create_voice_channel(msg)
+        await guild.create_voice_channel(F"{msg}", category)
         await ctx.send(f'《語音頻道》創建名為 {msg} 語音頻道 在〘**{guild}**〙')
         
 

@@ -42,7 +42,26 @@ class Message(Cog_Extension):
     @commands.has_permissions(administrator=True)
     async def del_msg(self, ctx, num:int):
         print(F'【指令】 {ctx.author} 打了 [del_messange 刪除訊息] 指令')
+        await ctx.message.delete()
         await ctx.channel.purge(limit=num)
+
+    #指令 - say_dm - 傳送私聊訊息
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def say_dm(self, ctx, member: discord.Member=None, *, msg):
+        print(f'【指令】〔{ctx.author}〕 輸入 [say_dm]')
+        await ctx.message.delete()
+        if not member:
+            member = ctx.message.author
+        guild = self.bot.get_guild(ctx.author.guild.id)
+        member_user = guild.get_member(member.id)
+        await member_user.send(msg)
+        embed = discord.Embed(title=F"『私訊聊天室』", description="[點此到達指定使用者頭像連結](%s)" % member.avatar_url, color=0xd08a2b)
+        embed.set_thumbnail(url=F"{member.avatar_url}")
+        embed.add_field(name="指定使用者", value=F"{member.name}", inline=True)
+        embed.add_field(name="指定的訊息", value=F"{msg}", inline=False)
+        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
+        await ctx.send(embed=embed)
     
     #指令-now_time 現在時間
     @commands.command()
@@ -50,17 +69,9 @@ class Message(Cog_Extension):
         print(F'【指令】 {ctx.author} 打了 [now_time 現在時間] 指令')
         await ctx.message.delete()
         now = datetime.datetime.now()
-        await ctx.send(F'現在機器人的時間是 {now}')
-    
-    #指令-avatar 顯示指令使用者頭像
-    @commands.command()
-    async def avatar(self, ctx, member: discord.Member=None):  
-        print(f'【指令】〔{ctx.author}〕 輸入 [avatar] 使機器人加入頻道')
-        if not member:
-            member = ctx.message.author
-        show_avatar = discord.Embed(title=F"{member}", description="[點此到達頭像連結](%s)" % member.avatar_url, color=0xd08a2b)
-        show_avatar.set_image(url="{}".format(member.avatar_url))
-        await ctx.send(embed=show_avatar)
+        loc = now.rfind('.')
+        nnow = now[:loc]
+        await ctx.send(F'現在機器人的時間是 {nnow}')
 
 def setup(bot):
     bot.add_cog(Message(bot))

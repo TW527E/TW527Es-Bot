@@ -7,10 +7,23 @@ class Help(Cog_Extension):
 
     #指令-指令幫助
     @commands.command()
-    async def help(self, ctx, helpnumber):
+    async def help(self, ctx, helpnumber=None):
         print(F'《指令》〔{ctx.author}〕 輸入 [help 指令提示幫助] 指令')
         await ctx.message.delete()
-        if helpnumber == '1':
+        if helpnumber == None:
+            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助↓", color=0x28d252)
+            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
+            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=True)
+            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=False)
+            embed.add_field(name="-------------------", value="指令幫助指令", inline=True)
+            embed.add_field(name="|help", value="指令提示幫助", inline=False)
+            embed.add_field(name="|help 1", value="指令提示幫助1", inline=True)
+            embed.add_field(name="|help 2", value="指令提示幫助2", inline=False)
+            embed.add_field(name="|help music", value="指令提示幫助 音樂分類 ", inline=True)
+            embed.add_field(name="-------------------", value="其他指令", inline=False)
+            embed.add_field(name="@|invite", value="獲取機器人邀請碼", inline=True)
+            await ctx.send(embed=embed)
+        elif helpnumber == '1':
             embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助1↓", color=0x28d252)
             embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
             embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=False)
@@ -79,24 +92,5 @@ class Help(Cog_Extension):
             await ctx.send(embed=embed)
         else:
             await ctx.send('『指令提示幫助』 痾 你可能打錯了甚麼東西')
-
-    @help.error
-    async def help_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            print(F'《指令》〔{ctx.author}〕 輸入 [help 指令提示幫助] 指令')
-            await ctx.message.delete()
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=True)
-            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=False)
-            embed.add_field(name="-------------------", value="指令幫助指令", inline=True)
-            embed.add_field(name="|help", value="指令提示幫助", inline=False)
-            embed.add_field(name="|help 1", value="指令提示幫助1", inline=True)
-            embed.add_field(name="|help 2", value="指令提示幫助2", inline=False)
-            embed.add_field(name="|help music", value="指令提示幫助 音樂分類 ", inline=True)
-            embed.add_field(name="-------------------", value="其他指令", inline=False)
-            embed.add_field(name="@|invite", value="獲取機器人邀請碼", inline=True)
-            await ctx.send(embed=embed)
-
 def setup(bot):
     bot.add_cog(Help(bot))

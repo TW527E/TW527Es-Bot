@@ -14,7 +14,7 @@ class member(Cog_Extension):
     #伺服器通知-有人加入了伺服器(setting.json)
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id == 447628147286999042:
+        if member.guild.id == jdata['guild_id']:
             print(F'> 〔{member}〕 加入了伺服器')
             channel = self.bot.get_channel(int(jdata['member_join_channel']))
             embed=discord.Embed(title=F"『{member}』 加入了伺服器", color=0xd08a2b)
@@ -27,7 +27,7 @@ class member(Cog_Extension):
     #伺服器通知-有人退出了伺服器(setting.json)
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        if member.guild.id == 447628147286999042:
+        if member.guild.id == jdata['guild_id']:
             print(F'> 〔{member}〕 退出了伺服器')
             channel = self.bot.get_channel(int(jdata['member_leave_channel']))
             await channel.send(F'>> {member} << 退出了伺服器')
@@ -37,20 +37,22 @@ class member(Cog_Extension):
     #伺服器-Reaction Role 新增反應貼圖獲得身分組
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        print(F'『{payload.member}』加入反應 已獲得Steve')
-        if payload.message_id == 667987897588121610:
-            if str(payload.emoji) == '<:Taiwan:734310979948773407>':
+        if payload.message_id == int(jdata['Reaction_Msg']):
+            if str(payload.emoji) == jdata['Reaction_Emoji']:
+                print(F'『{payload.member}』加入反應 已獲得Steve')
                 guild = self.bot.get_guild(payload.guild_id)
-                role = guild.get_role(470078983325745152)
+                role = guild.get_role(int(jdata['Reaction_Role']))
                 await payload.member.add_roles(role)
-                await payload.member.send('''恭喜你撐過了這艱難的10分鐘:partying_face: 
+                await payload.member.send('''恭喜你成為了『TaiwanMC』的一員:partying_face: 
 
                 你獲得了 『Steve』 身分組 
 
                 如果你是Minecraft玩家 記得在TaiwanMC的Minecraft伺服器裡面
                 連結你的Discord帳號
                 只要打 /discord link
-                就可以知道之後要怎麼辦了''')
+                就可以知道之後要怎麼辦了
+                
+                (我是群主自製小機器人喔)''')
             else:
                 pass
         else:
@@ -59,12 +61,12 @@ class member(Cog_Extension):
     #伺服器-Reaction Role 移除反應貼圖移除身分組
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        if payload.message_id == 667987897588121610:
-            if str(payload.emoji) == '<:Taiwan:734310979948773407>':
+        if payload.message_id == int(jdata['Reaction_Msg']):
+            if str(payload.emoji) == jdata['Reaction_Emoji']:
                 guild = self.bot.get_guild(payload.guild_id)
                 user = guild.get_member(payload.user_id)
                 print(F'『{user}』移除反應 刪除了Steve')
-                role = guild.get_role(470078983325745152)
+                role = guild.get_role(int(jdata['Reaction_Role']))
                 await user.remove_roles(role)
                 await user.send('''等等 你怎麼按到移除的!!
                 你該不會退出過伺服器了吧

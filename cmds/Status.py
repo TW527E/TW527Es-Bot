@@ -5,6 +5,15 @@ from core.classes import Cog_Extension #導入Cog_extension 的定義
 
 class Status(Cog_Extension):
 
+    #指令-online 上線
+    @commands.command()
+    @commands.is_owner()
+    async def status(self, ctx, stat, message):
+        print(F'《指令》〔{ctx.author}〕 輸入 [status] 指令')
+        await ctx.message.delete()
+        await ctx.send('【狀態】123')
+        await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.watching, name=F"{message}"))
+
     #指令-shutdown 下線
     @commands.command()
     @commands.is_owner()
@@ -41,7 +50,7 @@ class Status(Cog_Extension):
         await ctx.send('【狀態】不要打擾我( •̀ ω •́ )✧')
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.watching, name="不要吵我`(*>﹏<*)′"))
 
-    #指令-dnd
+    #指令-test
     @commands.command()
     @commands.is_owner()
     async def test(self, ctx):
@@ -49,6 +58,15 @@ class Status(Cog_Extension):
         await ctx.message.delete()
         await ctx.send('【狀態】機器人測試中 請勿打擾')
         await self.bot.change_presence(activity=discord.Streaming(name="機器人測試中", url="https://www.twitch.tv/tw527e"))
+        
+    #指令-test
+    @commands.command()
+    @commands.is_owner()
+    async def abc(self, ctx):
+        print(F'《指令》〔{ctx.author}〕 輸入 [abc] 指令')
+        await ctx.message.delete()
+        await ctx.send('【狀態】機器人測試中')
+        await self.bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.custom, name='123', emoji=None))
 
 def setup(bot):
     bot.add_cog(Status(bot))
