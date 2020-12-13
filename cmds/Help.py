@@ -33,6 +33,7 @@ class Help(Cog_Extension):
             embed.add_field(name="*|kick <@使用者>", value="kick user 讓機器人踢出 指定使用者", inline=False)
             embed.add_field(name="*|ban <@使用者>", value="ban user 讓機器人封鎖 指定使用者", inline=True)
             embed.add_field(name="*|unban <使用者>", value="unban user 讓機器人解除封鎖 指令使用者", inline=False)
+            embed.add_field(name="@|logout", value="logout 機器人登出(關機)", inline=True)
             embed.add_field(name="-------------------", value="訊息指令", inline=True)
             embed.add_field(name="*|say_msg <訊息內容>", value="say_message 使機器人傳送一則您指令的訊息", inline=False)
             embed.add_field(name="*|del_msg <訊息數量>", value="del_message 刪除指定數量的訊息", inline=True)
@@ -90,7 +91,25 @@ class Help(Cog_Extension):
             embed.add_field(name="|volume <音量大小 單位:%>", value="調整音量大小", inline=False)
             embed.add_field(name="|next", value="下一首音樂", inline=True)
             await ctx.send(embed=embed)
+        elif helpnumber == 'boom':
+            if await ctx.author.is_owner() == True:
+                await ctx.send('你怎麼知道這個分類的??')
+                return
+            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助 炸群分類↓", color=0x28d252)
+            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
+            embed.add_field(name="備註1", value="僅機器人擁有者可以用", inline=True)
+            embed.add_field(name="-------------------", value="炸群指令", inline=False)
+            embed.add_field(name="|play <音樂連結>", value="播放音樂", inline=True)
+            embed.add_field(name="|stop", value="停止播放音樂", inline=False)
+            embed.add_field(name="|pause", value="暫停音樂", inline=True)
+            embed.add_field(name="|resume", value="繼續播放音樂", inline=False)
+            embed.add_field(name="|queue <音樂連結>", value="新增音樂", inline=True)
+            embed.add_field(name="|volume <音量大小 單位:%>", value="調整音量大小", inline=False)
+            embed.add_field(name="|skip", value="下一首音樂 (Aliases:|ski , |next , |", inline=True)
+            user = ctx.author
+            await user.send(embed=embed)
         else:
             await ctx.send('『指令提示幫助』 痾 你可能打錯了甚麼東西')
+            
 def setup(bot):
     bot.add_cog(Help(bot))

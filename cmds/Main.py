@@ -13,7 +13,8 @@ class Main(Cog_Extension):
     @commands.command()
     @commands.is_owner()
     async def aue(self, ctx):
-        print(", ".join([str(r.name) for r in ctx.author.roles]))
+        accept_decline = await ctx.send("Test")
+        print(accept_decline)
         
     #指令-cmd 控制台指令
     @commands.command()

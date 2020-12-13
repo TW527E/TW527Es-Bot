@@ -3,3 +3,11 @@ discord.py[voice]
 youtube_dl
 ffmpeg
 spotdl
+opencv-python
+numpy
+imutils
+matplotlib
+scipy
+pynacl
+moviepy
+pathlib

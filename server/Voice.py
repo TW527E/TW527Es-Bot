@@ -3,12 +3,14 @@ import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 from core.classes import Cog_Extension #導入Cog_extension 的定義
 from discord.utils import get
+import os
+import json
+import datetime
 from pathlib import Path
 import shutil
 import youtube_dl
-import spotdl
-import os
-import json
+import moviepy
+import moviepy.editor
 
 players = {}
 queues = {}
@@ -17,8 +19,9 @@ class Voice(Cog_Extension):
 
     #指令-play 播放音樂
     @commands.command(pass_context=True, aliases=['p', 'pla'])
-    async def play(self, ctx, url: str):
-        print(F'『音樂』〔{ctx.author}〕 輸入 [play - 播放音樂] 指令 連結為:[{url}]')
+    async def play(self, ctx, *, url: str):
+        print(F'『音樂』〔{ctx.author}〕 輸入 [play - 播放音樂] 指令 [{url}]')
+        name = ''
         channel = ctx.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
@@ -26,7 +29,12 @@ class Voice(Cog_Extension):
         else:
             await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
             await channel.connect()
-
+        def is_supported(url):
+            extractors = youtube_dl.extractor.gen_extractors()
+            for e in extractors:
+                if e.suitable(url) and e.IE_NAME != 'generic':
+                    return True
+            return False
         def check_queue():
             Queue_infile = os.path.isdir("./Queue")
             if Queue_infile is True:
@@ -52,8 +60,22 @@ class Voice(Cog_Extension):
                     for file in os.listdir("./"):
                         if file.endswith(".mp3"):
                             os.rename(file, 'song.mp3')
-                            queues[q_num] -= 1
-
+                    DIR = os.path.abspath(os.path.realpath("Queue"))
+                    q_num = len(os.listdir(DIR))
+                    remove_queue = True
+                    while remove_queue:
+                        if q_num in queues:
+                            if q_num == 0:
+                                remove_queue = False
+                            else:
+                                q_num -= 1
+                                remove_queue = False
+                        remove_queue = False
+                    if len(os.listdir(os.path.abspath(os.path.realpath("Queue")))) >= 1:
+                        still_a = 1
+                        while still_a <= len(os.listdir(os.path.abspath(os.path.realpath("Queue")))):
+                            os.rename(F'.\Queue\song{still_a + 1}.mp3', F'.\Queue\song{still_a}.mp3')
+                            still_a = still_a + 1
                     voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
                     voice.source = discord.PCMVolumeTransformer(voice.source)
                     with open('setting.json', mode='r', encoding='utf8') as jfile:
@@ -105,11 +127,14 @@ class Voice(Cog_Extension):
                     'preferredquality': '192',
                 }],
             }
-
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 print("『音樂』正在下載指定音樂(播放清單)的音樂\n")
-                await ctx.send("『音樂』:ballot_box:正在下載指定音樂(播放清單)的音樂")
-                ydl.download([url])
+                message = await ctx.send(":musical_note:『音樂』正在下載指定音樂(播放清單)的音樂")
+                if is_supported(url) == False:
+                    song_search = " ".join(url)
+                    ydl.download([f"ytsearch1:{song_search}"])
+                else:
+                    ydl.download([url])
 
             for file in os.listdir(os.path.abspath(os.path.realpath("Queue_Wait"))):
                 if file.endswith(".mp3"):
@@ -117,13 +142,48 @@ class Voice(Cog_Extension):
                     print(f"『音樂』重新命名檔案: {file}\n")
                     os.rename(F".\Queue_Wait\{file}", F".\Queue\song{q_num}.mp3")
 
-            embed=discord.Embed(title="------------------------------------", color=0x28d252)
-            embed.set_author(name="新增音樂至播放清單")
-            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
-            embed.add_field(name="音樂名稱:", value=F"{name[:-4]}", inline=True)
+            if is_supported(url) == True:
+                ytdl = ydl.extract_info(url, download=False)
+                ytid = ytdl.get("id", None)
+                ytitle = ytdl.get('title', None)
+            
+            if is_supported(url) == True:
+                embed=discord.Embed(title="------------------------------------", color=0x28d252)
+            else:
+                embed=discord.Embed(title="------------------------------------", description="(搜尋功能測試中)", color=0x28d252)
+            embed.set_author(name="新增音樂")
+            if is_supported(url) == True:
+                embed.set_thumbnail(url=F"http://img.youtube.com/vi/{ytid}/0.jpg")
+            else:
+                embed.set_thumbnail(url=F"https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
+            if is_supported(url) == True:
+                embed.add_field(name="音樂名稱:", value=F"```{ytitle}```", inline=True)
+            else:
+                embed.add_field(name="音樂名稱:", value=F"```{name[:-4]}```\n(搜尋功能測試中)", inline=True)
+            def convert_Queue(seconds):
+                hours = seconds // 3600
+                seconds %= 3600
+                mins = seconds // 60
+                seconds %= 60
+                return hours, mins, seconds
+            # Create an object by passing the location as a string
+            video = moviepy.editor.AudioFileClip(F".\Queue\song{q_num}.mp3")
+            # Contains the duration of the video in terms of seconds
+            video_duration = int(video.duration)
+            hours, mins, secs = convert_Queue(video_duration)
+            if hours == 0:
+                print(F'音樂長度 : {mins}分鐘 {secs}秒')
+                embed.add_field(name="音樂長度:", value=F"{mins}分鐘 {secs}秒", inline=True)
+            else:
+                print(F'音樂長度 : {hours}小時 {mins}分鐘 {secs}秒')
+                embed.add_field(name="音樂長度:", value=F"{hours}小時 {mins}分鐘 {secs}秒", inline=True)
             embed.add_field(name="播放號碼:", value=F"{q_num}", inline=True)
-            await ctx.send(embed=embed)
-            print(F"『音樂』已加入音樂 排隊中 音樂名稱:{name[:-4]} 排隊號碼為" + str(q_num))
+            embed.set_footer(text=F"此音樂由 {ctx.author} • 新增", icon_url=ctx.author.avatar_url)
+            await message.edit(embed=embed, content='')
+            if is_supported(url) == True:
+                print(F"『音樂』已加入音樂 排隊中 音樂名稱:{ytitle} 排隊號碼為" + str(q_num))
+            else:
+                print(F"『音樂』已加入音樂 排隊中 音樂名稱:{name[:-4]} 排隊號碼為" + str(q_num))
             #print("『音樂』正在嘗試刪除音樂 可是他還在播")
             #await ctx.send(":musical_note:『音樂』正在嘗試刪除音樂 可是他還在播阿!!!")
             return
@@ -141,7 +201,7 @@ class Voice(Cog_Extension):
         except:
             print("『音樂』沒有播放清單")
 
-        await ctx.send(":musical_note:『音樂』正在下載指定音樂(播放清單)的音樂")
+        message = await ctx.send(":musical_note:『音樂』正在下載指定音樂(播放清單)的音樂")
 
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -155,14 +215,16 @@ class Voice(Cog_Extension):
                 'preferredquality': '192',
             }],
         }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                print("『音樂』正在下載指定音樂(播放清單)的音樂\n")
+
+        if is_supported(url) == False:
+            song_search = " ".join(url)
+
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            print("『音樂』正在下載指定音樂(播放清單)的音樂\n")
+            if is_supported(url) == False:
+                ydl.download([f"ytsearch1:{song_search}"])
+            else:
                 ydl.download([url])
-        except:
-            print("『音樂』錯誤 機器人不支持這個連結 (Spotify 的話是正常的)")
-            c_path = os.path.dirname(os.path.realpath(__file__))
-            os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
 
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
@@ -178,13 +240,51 @@ class Voice(Cog_Extension):
             
         vvolume = jdata['volume']*100
 
-        embed=discord.Embed(title="------------------------------------", color=0x28d252)
+        if is_supported(url) == True:
+            ytdl = ydl.extract_info(url, download=False)
+            ytid = ytdl.get("id", None)
+            ytitle = ytdl.get('title', None)
+
+        if is_supported(url) == True:
+            embed=discord.Embed(title="------------------------------------", color=0x28d252)
+        else:
+            embed=discord.Embed(title="------------------------------------", description="(搜尋功能測試中)", color=0x28d252)
         embed.set_author(name="新增音樂")
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
-        embed.add_field(name="音樂名稱:", value=F"{name[:-4]}", inline=True)
-        embed.add_field(name=":loud_sound:目前音量:", value=F"{vvolume}", inline=True)
-        await ctx.send(embed=embed)
-        print(F"『音樂』目前播放音樂: {name[:-4]} 音量:{vvolume}%")
+        if is_supported(url) == True:
+            embed.set_thumbnail(url=F"http://img.youtube.com/vi/{ytid}/0.jpg")
+        else:
+            embed.set_thumbnail(url=F"https://cdn.discordapp.com/attachments/739005886797840385/739459458488598568/658d047ef378c3147a9d8d3a01fef268.png")
+        if is_supported(url) == True:
+            embed.add_field(name="音樂名稱:", value=F"```{ytitle}```", inline=True)
+        else:
+            embed.add_field(name="音樂名稱:", value=F"```{name[:-4]}```", inline=True)
+        def convert(seconds):
+            hours = seconds // 3600
+            seconds %= 3600
+            mins = seconds // 60
+            seconds %= 60
+            return hours, mins, seconds
+        # Create an object by passing the location as a string
+        video = moviepy.editor.AudioFileClip(".\song.mp3")
+        # Contains the duration of the video in terms of seconds
+        video_duration = int(video.duration)
+        hours, mins, secs = convert(video_duration)
+        now = str(datetime.datetime.now())
+        loc = now.rfind('.')
+        nnow = now[:loc]
+        if hours == 0:
+            print(F'音樂長度 : {mins}分鐘 {secs}秒')
+            embed.add_field(name="音樂長度:", value=F"{mins}分鐘 {secs}秒", inline=True)
+        else:
+            print(F'音樂長度 : {hours}小時 {mins}分鐘 {secs}秒')
+            embed.add_field(name="音樂長度:", value=F"{hours}小時 {mins}分鐘 {secs}秒", inline=True)
+        embed.add_field(name=":loud_sound:目前音量:", value=F"{vvolume}", inline=False)
+        embed.set_footer(text=F"此音樂由 {ctx.author} 新增 • {nnow}", icon_url=ctx.author.avatar_url)
+        await message.edit(embed=embed, content='')
+        if is_supported(url) == True:
+            print(F"『音樂』目前播放音樂: {ytitle} 音量:{vvolume}%")
+        else:
+            print(F"『音樂』目前播放音樂: {name[:-4]} 音量:{vvolume}%")
 
     #指令-pause 暫停音樂
     @commands.command(pass_context=True, aliases=['pa', 'pau', 'paus'])
@@ -282,11 +382,17 @@ class Voice(Cog_Extension):
 
     #指令-volume 音量
     @commands.command(pass_context=True, aliases=['v', 'vol', 'volum', 'V', 'Vol', 'Volum', 'Volume'])
-    async def volume(self, ctx, volume: int):
+    async def volume(self, ctx, volume: int = 145554666461561984946213):
+        if volume == 145554666461561984946213:
+            with open('setting.json', mode='r', encoding='utf8') as jfile:
+                jdata = json.load(jfile)
+            await ctx.send(f"『音樂』:loud_sound:目前音量為 **`{jdata['volume']*100}%`**")
+            pass
+        
         if volume <= 100 and volume >= 0:
 
             if ctx.voice_client is None:
-                return await ctx.send("『音樂』:octagonal_sign:還沒還沒有音樂在播放")
+                return await ctx.send("『音樂』:octagonal_sign: 還沒有音樂在播放")
 
             print(F'『音樂』"{ctx.author.name}" 輸入了 指令"Volume" 音量:{str(volume)}')
             with open('setting.json', mode='r', encoding='utf8') as jfile:
@@ -314,7 +420,6 @@ class Voice(Cog_Extension):
         else:
             print("『音樂』沒有音樂再播")
             await ctx.send("『音樂』沒有音樂再播")
-
 
 def setup(bot):
     bot.add_cog(Voice(bot))

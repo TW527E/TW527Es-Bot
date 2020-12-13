@@ -2,7 +2,9 @@
 import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 from core.classes import Cog_Extension #導入Cog_extension 的定義
+from core.loggee import Loggee
 import json
+import datetime
 import asyncio
 
 class Level_System(Cog_Extension):
@@ -52,6 +54,10 @@ class Level_System(Cog_Extension):
         
         if self.level_up(author_id):
             level = self.users[author_id]['level']
+            now = str(datetime.datetime.now())
+            loc = now.rfind('.')
+            nnow = now[:loc]
+            Loggee(F'[{nnow}]> 『等級系統』"{message.author}" 升等了 目前等級為 "{level}"')
             await message.channel.send(F'『等級系統』**{message.author}** 你升級了**一等** 你目前等級為**{level}**')
         
     #指令-level
@@ -62,6 +68,11 @@ class Level_System(Cog_Extension):
         llevel = self.users[member_id]['level']
         mexp =  round((4 * (llevel * 6)) / 2) - self.users[member_id]["exp"]
 
+        now = str(datetime.datetime.now())
+        loc = now.rfind('.')
+        nnow = now[:loc]
+        Loggee(F'[{nnow}]> 『等級系統』"{ctx.author}" 輸入了 [Level 等級顯示]')
+
         if not member_id in self.users:
             await ctx.send(F'『等級系統』**{ctx.author.memtion}** 你認為你在等級系統裡面的地位是人嗎?')
         else:
@@ -70,14 +81,8 @@ class Level_System(Cog_Extension):
             embed.add_field(name="目前等級", value=F"{self.users[member_id]['level']}", inline=False)
             embed.add_field(name="經驗值", value=F"還差 {mexp} 個經驗 才能升級", inline=False)
             embed.add_field(name="打了多少次訊息", value=F"{self.users[member_id]['message']}", inline=False)
-            embed.set_footer(text=F"此指令由 {member.name} 輸入 • ", icon_url=ctx.author.avatar_url)
+            embed.set_footer(text=F"此指令由 {member.name} 輸入 • {nnow} 輸入", icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
-
-    #指令-
-    @commands.command()
-    async def auee(self, ctx):
-        customer_name = "|John Milton"
-        print(customer_name.startswith("|"))
 
 def setup(bot):
     bot.add_cog(Level_System(bot))

@@ -61,7 +61,7 @@ class Info(Cog_Extension):
         jjoin = join[:loc]
         info.add_field(name="此帳號加入此群日期", value=F"{jjoin}", inline=True)
         roles = member.roles
-        info.add_field(name="在此群擁有的所有身分組", value=F"".join([role.mention for role in roles]), inline=False)
+        info.add_field(name="在此群擁有的所有身分組", value=F",".join([role.mention for role in roles]), inline=False)
         if member.bot is True:
             info.add_field(name="使用者是否為機器人", value="是機器人", inline=True)
         else:

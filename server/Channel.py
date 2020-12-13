@@ -2,6 +2,7 @@
 import discord  #導入Discord.py的專案
 from discord.ext import commands  #導入指令
 from core.classes import Cog_Extension #導入Cog_extension 的定義
+from core.loggee import Loggee
 import os
 import nacl
 import json

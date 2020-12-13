@@ -12,23 +12,6 @@ with open('setting.json','r', encoding='utf8') as jfile:
 
 class Message(Cog_Extension):
 
-    #指令-MC_img 隨機傳送 Minecraft 圖片
-    @commands.command()
-    async def MC(self, ctx):
-        print(F'【指令】 {ctx.author} 打了 [MC_img 隨機傳送 Minecraft 圖片] 指令')
-        await ctx.message.delete()
-        random_pic = random.choice(jdata['MC_img'])
-        MC_img = discord.File(random_pic)
-        await ctx.send(file= MC_img)
-
-    #指令-MC_img 隨機傳送網路上的 Minecraft 圖片
-    @commands.command()
-    async def url_img(self, ctx):
-        print(F'【指令】 {ctx.author} 打了 [url_img 隨機傳送網路上的 Minecraft 圖片] 指令')
-        await ctx.message.delete()
-        random_pic = random.choice(jdata['url_img'])
-        await ctx.send(random_pic)
-
     #指令-say_msg 機器人訊息複誦
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -46,13 +29,16 @@ class Message(Cog_Extension):
         await ctx.channel.purge(limit=num)
 
     #指令 - say_dm - 傳送私聊訊息
-    @commands.command()
+    @commands.command(pass_context=True, aliases=['dm'])
     @commands.has_permissions(administrator=True)
     async def say_dm(self, ctx, member: discord.Member=None, *, msg):
         print(f'【指令】〔{ctx.author}〕 輸入 [say_dm]')
         await ctx.message.delete()
         if not member:
             member = ctx.message.author
+        now = str(datetime.datetime.now())
+        loc = now.rfind('.')
+        nnow = now[:loc]
         guild = self.bot.get_guild(ctx.author.guild.id)
         member_user = guild.get_member(member.id)
         await member_user.send(msg)
@@ -60,7 +46,7 @@ class Message(Cog_Extension):
         embed.set_thumbnail(url=F"{member.avatar_url}")
         embed.add_field(name="指定使用者", value=F"{member.name}", inline=True)
         embed.add_field(name="指定的訊息", value=F"{msg}", inline=False)
-        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • {nnow} 輸入", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
     
     #指令-now_time 現在時間
@@ -68,7 +54,7 @@ class Message(Cog_Extension):
     async def now_time(self, ctx):
         print(F'【指令】 {ctx.author} 打了 [now_time 現在時間] 指令')
         await ctx.message.delete()
-        now = datetime.datetime.now()
+        now = str(datetime.datetime.now())
         loc = now.rfind('.')
         nnow = now[:loc]
         await ctx.send(F'現在機器人的時間是 {nnow}')
