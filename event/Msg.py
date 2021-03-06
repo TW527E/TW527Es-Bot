@@ -53,24 +53,11 @@ class Msg(Cog_Extension):
                 Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[警告機制]')
 
     @commands.Cog.listener()
-    async def on_raw_message_delete(self, payload):
-        counter = 1
-        gguild = self.bot.get_guild(payload.guild_id)
-        async for auditlog in gguild.audit_logs(action=discord.AuditLogAction.message_delete):
-            if counter == 1:
-                now = str(datetime.datetime.now())
-                loc = now.rfind('.')
-                nnow = now[:loc]
-                ch = self.bot.get_channel(774791627490197524)
-                msgch = self.bot.get_channel(auditlog.message.id)
-                embed = discord.Embed(title=F"『訊息刪除紀錄』", description="[點此到達指定使用者頭像連結](%s)" % auditlog.user.avatar_url, color=0xd08a2b)
-                embed.set_thumbnail(url=F"{auditlog.user.avatar_url}")
-                embed.add_field(name="使用者", value=F"{auditlog.user.name}", inline=True)
-                embed.add_field(name="頻道", value=F"{msgch.name}", inline=True)
-                embed.add_field(name="使用者", value=F"{auditlog.user.name}", inline=False)
-                embed.set_footer(text=F"此訊息刪除時間 [{nnow}] ", icon_url=auditlog.user.avatar_url)
-                await ch.send(embed=embed)
-                counter += 1
+    async def on_message_delete(self, message):
+        embed = discord.Embed(title="{} deleted a message".format(message.member.name), description="", color="Blue")
+        embed.add_field(name= message.content ,value="This is the message that he has deleted", inline=True)
+        channel = self.bot.get_channel(channel_id)
+        await channel.send(channel, embed=embed)
 
             #await channel.send(F'使用者『{msg.author}』 刪除了 〔{msg.content}〕')
 

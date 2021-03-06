@@ -68,13 +68,14 @@ class member(Cog_Extension):
         now = str(datetime.datetime.now())
         loc = now.rfind('.')
         nnow = now[:loc]
-
+        #TaiwanMC
         if int(payload.message_id) == int(taiwanmc_data['Reaction_Msg']):
             if str(payload.emoji) == str(taiwanmc_data['Reaction_Emoji']):
                 guild = self.bot.get_guild(payload.guild_id)
                 role = guild.get_role(int(taiwanmc_data['Reaction_Role']))
+                role2 = guild.get_role(int(taiwanmc_data['Reaction_Role2']))
                 print(F'[{nnow}]> 《{guild.name}》『{payload.member}』加入反應 已獲得《{role.name}》')
-                await payload.member.add_roles(role)
+                await payload.member.add_roles(role, role2)
                 await payload.member.send('''恭喜你成為了『TaiwanMC』的一員:partying_face: 
 
                 你獲得了 『Steve』 身分組 
@@ -85,7 +86,7 @@ class member(Cog_Extension):
                 就可以知道之後要怎麼辦了
                 
                 (我是群主自製小機器人喔)''')
-
+        #ITDT
         if int(payload.message_id) == int(it_data['Reaction_Msg']):
             if str(payload.emoji) == str(it_data['Reaction_Emoji']):
                 guild = self.bot.get_guild(payload.guild_id)
@@ -101,16 +102,17 @@ class member(Cog_Extension):
         now = str(datetime.datetime.now())
         loc = now.rfind('.')
         nnow = now[:loc]
-
+        #TaiwanMC
         if str(payload.message_id) == str(taiwanmc_data['Reaction_Msg']):
             if str(payload.emoji) == taiwanmc_data['Reaction_Emoji']:
                 guild = self.bot.get_guild(payload.guild_id)
                 user = guild.get_member(payload.user_id)
                 print(F'[{nnow}]> 《{guild.name}》『{payload.member}』加入反應 已獲得《{role.name}》')
                 role = guild.get_role(int(taiwanmc_data['Reaction_Role']))
-                await user.remove_roles(role)
+                role2 = guild.get_role(int(taiwanmc_data['Reaction_Role2']))
+                await user.remove_roles(role, role2)
                 await user.send('.....')
-
+        #ITDT
         if str(payload.message_id) == str(it_data['Reaction_Msg']):
             if str(payload.emoji) == it_data['Reaction_Emoji']:
                 guild = self.bot.get_guild(payload.guild_id)
