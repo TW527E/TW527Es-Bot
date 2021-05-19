@@ -1,0 +1,11 @@
+discord.py
+discord.py[voice]
+youtube_dl
+ffmpeg
+opencv-python
+numpy
+scipy
+pynacl
+moviepy
+pathlib
+datetime
