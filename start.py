@@ -30,7 +30,7 @@ async def on_ready():
         await channel.send(F"《 **__TaiwanMC-苦力怕同學__** 》上線了")
         counter = 1
 
-#錯誤通知
+#   錯誤通知
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error,commands.CommandNotFound):
