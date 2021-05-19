@@ -8,7 +8,7 @@ from core.loggee import Loggee
 intents = discord.Intents.all()
 
 #讀取setting.json檔案
-with open('setting.json', 'r', encoding='utf8') as jfile:
+with open('setting.bot.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 #讀取 servers/taiwanmc.json檔案
