@@ -54,10 +54,11 @@ class Msg(Cog_Extension):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        embed = discord.Embed(title="{} deleted a message".format(message.member.name), description="", color="Blue")
-        embed.add_field(name= message.content ,value="This is the message that he has deleted", inline=True)
-        channel = self.bot.get_channel(channel_id)
-        await channel.send(channel, embed=embed)
+        embed = discord.Embed(title="刪除訊息紀錄", description="", color=0x28d252)
+        embed.add_field(name="訊息作者:", value=message.author, inline=False)
+        embed.add_field(name="刪除訊息:", value=message.content, inline=True)
+        channel = self.bot.get_channel(602041676692717599)
+        await channel.send(embed=embed)
 
             #await channel.send(F'使用者『{msg.author}』 刪除了 〔{msg.content}〕')
 

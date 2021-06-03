@@ -19,7 +19,7 @@ class Time_message(Cog_Extension):
                     await self.bot.change_presence(activity=discord.Activity(name="我是最帥的苦力怕", type=discord.ActivityType.watching))
                     await asyncio.sleep(3)
                 if discord.Streaming:
-                    await self.bot.change_presence(activity=discord.Activity(name="作者:誠誠 - TW527E#8668", type=discord.ActivityType.watching))
+                    await self.bot.change_presence(activity=discord.Activity(name="作者:「誠誠 - TW527E」#7773", type=discord.ActivityType.watching))
                     await asyncio.sleep(3)
 
         self.bg_time_message = self.bot.loop.create_task(status())
@@ -27,7 +27,7 @@ class Time_message(Cog_Extension):
 
         async def timsg():
             await self.bot.wait_until_ready()
-            self.channel = self.bot.get_channel()
+            self.channel = self.bot.get_channel(668698688578650113)
             while not self.bot.is_closed():
 
                 now_time = datetime.datetime.now().strftime('%H%M')
@@ -43,6 +43,20 @@ class Time_message(Cog_Extension):
                     pass
 
         self.bg_time_message = self.bot.loop.create_task(timsg())
+
+        async def leave_channnel():
+            await self.bot.wait_until_ready()
+            voice = get(self.bot.voice_clients, guild=ctx.guild)
+            while voice.is_playing(): #Checks if voice is playing
+                await asyncio.sleep(1) #While it's playing it sleeps for 1 second
+            else:
+                await asyncio.sleep(60) #If it's not playing it waits 15 seconds
+                while voice.is_playing(): #and checks once again if the bot is not playing
+                    break #if it's playing it breaks
+                else:
+                    await voice.disconnect() #if not it disconnects
+
+        self.bg_time_message = self.bot.loop.create_task(leave_channnel())
 
     #指令-set_auto_msg_time  設定發送公告時間
     @commands.command()

@@ -91,5 +91,13 @@ class Server(Cog_Extension):
         embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
+    #指令 - add_role
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def add_reaction(self, msg, emo):
+        emoji = self.bot.get_emoji(emo)
+        message = await self.bot.get_message(msg)
+        await message.add_reaction(emoji)
+
 def setup(bot):
     bot.add_cog(Server(bot))
