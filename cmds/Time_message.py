@@ -22,7 +22,7 @@ class Time_message(Cog_Extension):
                     await self.bot.change_presence(activity=discord.Activity(name="作者:「誠誠 - TW527E」#7773", type=discord.ActivityType.watching))
                     await asyncio.sleep(3)
 
-        self.bg_time_message = self.bot.loop.create_task(status())
+        #self.bg_time_message = self.bot.loop.create_task(status())
     
 
         async def timsg():

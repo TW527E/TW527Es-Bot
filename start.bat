@@ -1,4 +1,4 @@
 @echo off
 color a
-python3 start.py
+python start.py
 pause
