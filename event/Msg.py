@@ -52,14 +52,6 @@ class Msg(Cog_Extension):
                 await self.channel.send(F'『{msg.author.mention}』請勿輸入相關不雅詞語!  懲罰: 警告x1')
                 Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[警告機制]')
 
-    @commands.Cog.listener()
-    async def on_message_delete(self, message):
-        embed = discord.Embed(title="刪除訊息紀錄", description="", color=0x28d252)
-        embed.add_field(name="訊息作者:", value=message.author, inline=False)
-        embed.add_field(name="刪除訊息:", value=message.content, inline=True)
-        channel = self.bot.get_channel(602041676692717599)
-        await channel.send(embed=embed)
-
             #await channel.send(F'使用者『{msg.author}』 刪除了 〔{msg.content}〕')
 
 def setup(bot):
