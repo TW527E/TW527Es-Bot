@@ -25,7 +25,10 @@ async def on_ready():
     counter = 0
     await bot.change_presence(activity=discord.Streaming(name="|help 獲取指令提示幫助", url="https://www.twitch.tv/tw527e"))
     if counter == 0:
-        Loggee(f'《 TaiwanMC-苦力怕同學 》機器人 上線了')
+        Loggee(f'＝＝＝已登入＝＝＝')
+        Loggee(f'《 {bot.user} 》上線了')
+        Loggee(f'目前在的群組有 {bot.guilds}')
+        Loggee(f'＝＝＝已登入＝＝＝\n')
         channel = bot.get_channel(int(jdata['bot_ready_channel']))
         await channel.send(F"《 **__TaiwanMC-苦力怕同學__** 》上線了")
         counter = 1
@@ -66,6 +69,28 @@ async def logout(ctx):
     Loggee(f'『{ctx.author}』 輸入 機器人關機 Shutdown')
     await ctx.send('『登出』登登登登 (XP登出)')
     await bot.logout()
+
+#指令 - guild_leave - 離開群組
+@bot.command()
+@commands.is_owner()
+async def guild_leave(ctx, msg : int):
+    bot.get_guild(msg).leave()
+    Loggee(f'『{ctx.author}』 輸入 Guild Leave')
+
+#指令 - bot_guild - 機器人在的群組
+@bot.command()
+@commands.is_owner()
+async def bot_guild(ctx):
+    await ctx.send(f'{bot.guilds}')
+    Loggee(f'『{ctx.author}』 輸入 Bot Guild')
+
+#指令 - guild_invite
+@bot.command()
+@commands.is_owner()
+async def guild_invite(ctx, msg : int):
+    cnid = bot.get_guild(msg).text_channels[0].id
+    await ctx.send(f'{bot.get_guild(msg).get_channel(cnid).create_invite(xkcd=True, max_age = 0, max_uses = 0)}')
+    Loggee(f'『{ctx.author}』 輸入 Guild Invite')
 
 #指令 - invite - 邀請連結
 @bot.command()

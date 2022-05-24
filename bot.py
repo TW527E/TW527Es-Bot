@@ -25,7 +25,10 @@ async def on_ready():
     counter = 0
     await bot.change_presence(activity=discord.Streaming(name="|help 獲取指令提示幫助", url="https://www.twitch.tv/tw527e"))
     if counter == 0:
-        Loggee(f'《 TaiwanMC-苦力怕同學 》機器人 上線了')
+        Loggee(f'＝＝＝已登入＝＝＝')
+        Loggee(f'《 {bot.user} 》上線了')
+        Loggee(f'目前在的群組有 {bot.guilds}')
+        Loggee(f'＝＝＝已登入＝＝＝\n')
         channel = bot.get_channel(int(jdata['bot_ready_channel']))
         await channel.send(F"《 **__TaiwanMC-苦力怕同學__** 》上線了")
         counter = 1
