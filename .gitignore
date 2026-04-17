@@ -27,12 +27,10 @@ Log/
 *.log
 data/*.json
 downloads/
-Queue/
-Queue_Wait/
-*.mp3
-*.wav
-*.m4a
-*.webm
+
+# Local media assets
+G/
+Photo/
 
 # Editors and OS metadata
 .vscode/

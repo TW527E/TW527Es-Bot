@@ -85,8 +85,8 @@ cmds/        一般文字指令與管理指令
 event/       Discord 事件監聽
 server/      伺服器與頻道管理指令
 core/        共用設定、Log、Cog 基底與 Discord helper
-Photo/       本機隨機圖片素材
-G/           可用 |G <檔名> 傳送的圖片素材
+Photo/       本機圖片素材，已忽略，不提交
+G/           本機圖片素材，已忽略，不提交
 data/        執行時資料，已忽略
 Log/         執行時 log，已忽略
 ```
@@ -99,5 +99,6 @@ Log/         執行時 log，已忽略
 - 移除個人 `.vscode/` 設定
 - 移除舊依賴清單文字檔
 - 移除 tracked `setting.json`、`setting.bot.json`、`servers/*.json` 與等級資料 JSON
+- 移除 tracked `G/`、`Photo/` 圖片素材，改由本機忽略保存
 - 新增 `.env.example`、`setting.example.json`、`servers/server.example.json`
 - 更新 `.gitignore`，忽略 token、本機設定、log、cache、下載檔與執行時資料
