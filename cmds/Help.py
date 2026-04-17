@@ -6,6 +6,9 @@ from core.config import get_settings
 from core.discord_helpers import delete_invocation
 
 
+BOT_DISPLAY_NAME = "TW527E的機器人"
+
+
 class Help(Cog_Extension):
     @commands.command(name="help")
     async def help_command(self, ctx, category=None):
@@ -35,7 +38,7 @@ class Help(Cog_Extension):
             await ctx.send("『指令提示幫助』找不到這個分類。可用分類: basic, admin")
             return
 
-        embed = discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助", color=0x28D252)
+        embed = discord.Embed(title=BOT_DISPLAY_NAME, description="指令提示幫助", color=0x28D252)
         for name, value in fields:
             embed.add_field(name=name, value=value, inline=False)
         await ctx.send(embed=embed)

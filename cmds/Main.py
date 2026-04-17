@@ -7,11 +7,14 @@ from core.discord_helpers import avatar_url, delete_invocation
 from core.loggee import Loggee
 
 
+BOT_DISPLAY_NAME = "TW527E的機器人"
+
+
 class Main(Cog_Extension):
     @commands.command()
     async def ping(self, ctx):
         await delete_invocation(ctx)
-        embed = discord.Embed(title="TaiwanMC-苦力怕同學", description="Ping值", color=0x28D252)
+        embed = discord.Embed(title=BOT_DISPLAY_NAME, description="Ping值", color=0x28D252)
         embed.add_field(name="目前 Ping 值", value=f"{round(self.bot.latency * 1000)} 毫秒(ms)", inline=True)
         await ctx.send(embed=embed)
 

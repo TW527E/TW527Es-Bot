@@ -1,4 +1,6 @@
-# TaiwanMC LittleLove Discord Bot
+# TW527E's Bot
+
+中文名稱：TW527E的機器人
 
 這是一個早期開發的 Discord 管理/互動機器人。此分支已將專案整理成可在現代 `discord.py` 2.x 執行的結構，並移除敏感資料、快取資料與舊的音樂播放模組。
 

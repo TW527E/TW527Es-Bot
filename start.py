@@ -22,7 +22,10 @@ def iter_extensions():
             yield f"{folder}.{path.stem}"
 
 
-class TaiwanMCBot(commands.Bot):
+BOT_DISPLAY_NAME = "TW527E的機器人"
+
+
+class TW527EBot(commands.Bot):
     def __init__(self):
         self.settings = get_settings()
         self._ready_announced = False
@@ -71,7 +74,7 @@ class TaiwanMCBot(commands.Bot):
 
         channel = self.get_channel(channel_id)
         if channel is not None:
-            await channel.send("《 **__TaiwanMC-苦力怕同學__** 》上線了")
+            await channel.send(f"《 **__{BOT_DISPLAY_NAME}__** 》上線了")
 
     async def on_command_error(self, ctx, error):
         error = getattr(error, "original", error)
@@ -95,7 +98,7 @@ class TaiwanMCBot(commands.Bot):
         await ctx.send("【錯誤】指令執行時發生問題，已寫入 Log。", delete_after=5)
 
 
-bot = TaiwanMCBot()
+bot = TW527EBot()
 
 
 @bot.command()
