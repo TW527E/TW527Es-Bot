@@ -1,4 +1,4 @@
-from discord.ext import commands  #導入指令
+from discord.ext import commands
 
 class Cog_Extension(commands.Cog):
     def __init__(self, bot):

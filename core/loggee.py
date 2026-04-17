@@ -1,22 +1,19 @@
-import datetime
-import os
-import core.globals
+from datetime import datetime
 
-Log_path = "Log"
+from core.config import ROOT
 
-class Loggee():
+
+LOG_PATH = ROOT / "Log"
+
+
+class Loggee:
     def __init__(self, text):
-        def DO_IT():
-            now = str(datetime.datetime.now())
-            loc = now.rfind('.')
-            nnow = now[:loc]
-            core.globals.now()
-            with open(F'Log/log.{core.globals.timee}.log', 'a', encoding='utf8') as log:
-                print(F'[{nnow}]> {text}', file=log)
-            print(F'[{nnow}]> {text}')
+        LOG_PATH.mkdir(exist_ok=True)
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        logfile = LOG_PATH / f"log.{now.strftime('%Y-%m-%d')}.log"
 
-        try:
-            os.makedirs(Log_path)
-            DO_IT()
-        except FileExistsError:
-            DO_IT()
+        line = f"[{timestamp}]> {text}"
+        with logfile.open("a", encoding="utf8") as log:
+            print(line, file=log)
+        print(line)

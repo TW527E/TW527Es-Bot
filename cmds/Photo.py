@@ -1,67 +1,63 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
-from core.loggee import Loggee
-import requests
-import random #導入random的模組
-import json  #導入json的檔案形式
-import datetime #導入 時間 的模組
-import os
+import random
+import re
+from datetime import datetime
 
-#讀取setting.json檔案
-with open('setting.json','r', encoding='utf8') as jfile:
-    jdata = json.load(jfile)
+import discord
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.config import ROOT, get_configured_images, get_settings
+from core.discord_helpers import delete_invocation
+from core.loggee import Loggee
+
+
+SAFE_FILENAME = re.compile(r"^[A-Za-z0-9_-]+$")
+
 
 class Photo(Cog_Extension):
-
-    #指令-取得使用者頭像圖片到資料夾
     @commands.command()
-    async def get_user_icon(self, ctx, member: discord.Member=None):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        Loggee(f'[{nnow}]> 『指令』〔{ctx.author}〕 輸入 [get_user_icon]')
-        await ctx.message.delete()
-        if not member:
-            member = ctx.message.author
-        with open(F'{nnow}.jpg', 'wb') as f:
-            f.write(requests.get(member.avatar_url).content)
+    async def get_user_icon(self, ctx, member: discord.Member = None):
+        await delete_invocation(ctx)
+        member = member or ctx.author
+        target_dir = ROOT / "downloads" / "avatars"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        path = target_dir / f"{member.id}-{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+        await member.display_avatar.save(path)
+        Loggee(f"『指令』〔{ctx.author}〕 下載 {member} 的頭像到 {path}")
+        await ctx.send(f"已下載 {member.mention} 的頭像。")
 
-    #指令-MC_img 隨機傳送 Minecraft 圖片
     @commands.command()
     async def MC(self, ctx):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        Loggee(F'[{nnow}]> 『指令』 {ctx.author} 打了 [MC_img 隨機傳送 Minecraft 圖片] 指令')
-        await ctx.message.delete()
-        random_pic = random.choice(jdata['MC_img'])
-        MC_img = discord.File(random_pic)
-        await ctx.send(file= MC_img)
+        await delete_invocation(ctx)
+        images = get_configured_images(get_settings(), "MC_img", "Photo")
+        if not images:
+            await ctx.send("目前沒有可傳送的本機圖片。")
+            return
+        await ctx.send(file=discord.File(random.choice(images)))
 
-    #指令-MC_img 隨機傳送網路上的 Minecraft 圖片
     @commands.command()
     async def url_img(self, ctx):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        Loggee(F'[{nnow}]> 『指令』 {ctx.author} 打了 [url_img 隨機傳送網路上的 Minecraft 圖片] 指令')
-        await ctx.message.delete()
-        random_pic = random.choice(jdata['url_img'])
-        await ctx.send(random_pic)
+        await delete_invocation(ctx)
+        urls = [url for url in get_settings().get("url_img", []) if isinstance(url, str) and url.startswith("http")]
+        if not urls:
+            await ctx.send("目前沒有設定可傳送的網路圖片。")
+            return
+        await ctx.send(random.choice(urls))
 
-    #指令-MC_img 隨機傳送 Minecraft 圖片
-    @commands.command()
-    async def G(self, ctx, filename):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        Loggee(F'[{nnow}]> 『指令』 {ctx.author} 打了 [say_img 傳送圖片] 指令')
-        await ctx.message.delete()
-        ffile = '.\\G\\' + filename + '.png'
-        img = discord.File(ffile)
-        await ctx.send(file= img)
+    @commands.command(name="G")
+    async def send_g_image(self, ctx, filename):
+        await delete_invocation(ctx)
+        if not SAFE_FILENAME.fullmatch(filename):
+            await ctx.send("檔名只能包含英文、數字、底線或連字號。")
+            return
 
-def setup(bot):
-    bot.add_cog(Photo(bot))
+        path = ROOT / "G" / f"{filename}.png"
+        if not path.exists():
+            await ctx.send("找不到這張圖片。")
+            return
+
+        await ctx.send(file=discord.File(path))
+
+
+async def setup(bot):
+    await bot.add_cog(Photo(bot))

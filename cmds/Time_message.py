@@ -1,124 +1,89 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
-import json, asyncio, datetime #導入 json 異步協程 時間 的模組
+from datetime import datetime
+
+from discord.ext import commands, tasks
+
+from core.classes import Cog_Extension
+from core.config import get_settings, int_or_none, save_settings
+from core.discord_helpers import delete_invocation
+from core.loggee import Loggee
+
 
 class Time_message(Cog_Extension):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.counter = 0
-    
-        async def status():
-            await self.bot.wait_until_ready()
-            while not self.bot.is_closed():
-                if discord.Streaming:
-                    await self.bot.change_presence(activity=discord.Activity(name="|help 獲取指令提示幫助", type=discord.ActivityType.watching))
-                    await asyncio.sleep(3)
-                if discord.Streaming:
-                    await self.bot.change_presence(activity=discord.Activity(name="我是最帥的苦力怕", type=discord.ActivityType.watching))
-                    await asyncio.sleep(3)
-                if discord.Streaming:
-                    await self.bot.change_presence(activity=discord.Activity(name="作者:「誠誠 - TW527E」#7773", type=discord.ActivityType.watching))
-                    await asyncio.sleep(3)
+    def __init__(self, bot):
+        super().__init__(bot)
+        self.last_sent_date = None
+        self.announcement_loop.start()
 
-        #self.bg_time_message = self.bot.loop.create_task(status())
-    
+    def cog_unload(self):
+        self.announcement_loop.cancel()
 
-        async def timsg():
-            await self.bot.wait_until_ready()
-            self.channel = self.bot.get_channel(668698688578650113)
-            while not self.bot.is_closed():
+    @tasks.loop(seconds=60)
+    async def announcement_loop(self):
+        settings = get_settings()
+        configured_time = str(settings.get("time", "")).zfill(4)
+        now = datetime.now()
 
-                now_time = datetime.datetime.now().strftime('%H%M')
-                #讀取setting.json檔案
-                with open('setting.json','r', encoding='utf8') as jfile:
-                    jdata = json.load(jfile)
-                if now_time == jdata['time'] and self.counter == 0:
-                    await self.channel.send('test')
-                    self.counter = 1
-                    await asyncio.sleep(1)
-                else:
-                    await asyncio.sleep(1)
-                    pass
+        if now.strftime("%H%M") != configured_time:
+            return
+        if self.last_sent_date == now.date():
+            return
 
-        self.bg_time_message = self.bot.loop.create_task(timsg())
+        channel_id = int_or_none(settings.get("auto_message_channel")) or int_or_none(settings.get("bot_ready_channel"))
+        channel = self.bot.get_channel(channel_id) if channel_id else None
+        if channel is None:
+            return
 
-        async def leave_channnel():
-            await self.bot.wait_until_ready()
-            voice = get(self.bot.voice_clients, guild=ctx.guild)
-            while voice.is_playing(): #Checks if voice is playing
-                await asyncio.sleep(1) #While it's playing it sleeps for 1 second
-            else:
-                await asyncio.sleep(60) #If it's not playing it waits 15 seconds
-                while voice.is_playing(): #and checks once again if the bot is not playing
-                    break #if it's playing it breaks
-                else:
-                    await voice.disconnect() #if not it disconnects
+        await channel.send(str(settings.get("auto_message") or "test"))
+        self.last_sent_date = now.date()
+        Loggee(f"自動公告已送出到 {channel}")
 
-        self.bg_time_message = self.bot.loop.create_task(leave_channnel())
+    @announcement_loop.before_loop
+    async def before_announcement_loop(self):
+        await self.bot.wait_until_ready()
 
-    #指令-set_auto_msg_time  設定發送公告時間
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def set_auto_time(self, ctx, mn, hr: int, min: int):
-        self.counter = 0
-        await ctx.message.delete()
-        
-        if mn == '早上':
-            mn = 'morning'
-        elif mn == '早':
-            mn = 'morning'
-        elif mn == 'morning':
-            mn = 'morning'
-        elif mn == 'm':
-            mn = 'morning'
-        elif mn == '晚上':
-            mn = 'night'
-        elif mn == '晚':
-            mn = 'night'
-        elif mn == 'night':
-            mn = 'night'
-        elif mn == 'n':
-            mn = 'night'
-        
-        if hr >> 12  and hr <= 24:
-            hr = hr - 12
-        elif hr >> 24:
-            await ctx.send('『公告設定』你有病是吧? (錯誤:小時過大)')
-            print('『公告設定』錯誤:小時過大')
-        elif hr << 0:
-            await ctx.send('『公告設定』你有病是吧? (錯誤:小時過小)')
-            print('『公告設定』錯誤:小時過小')
+    async def set_auto_time(self, ctx, time_text):
+        await delete_invocation(ctx)
+        cleaned = time_text.replace(":", "").strip()
+        if len(cleaned) != 4 or not cleaned.isdigit():
+            await ctx.send("『公告設定』請使用 HHMM 或 HH:MM 格式，例如 0900 或 21:30。")
+            return
 
-        if min >= 61 or min << 0:
-            if min >= 61:
-                await ctx.send('『公告設定』你有病是吧? (錯誤:分鐘過大)')
-                print('『公告設定』錯誤:分鐘過大')
-            elif min << 0:
-                await ctx.send('『公告設定』你有病是吧? (錯誤:分鐘過小)')
-                print('『公告設定』錯誤:分鐘過小')
+        hour = int(cleaned[:2])
+        minute = int(cleaned[2:])
+        if hour > 23 or minute > 59:
+            await ctx.send("『公告設定』時間範圍錯誤。")
+            return
 
-        with open('setting.json', mode='r', encoding='utf8') as jfile:
-            jdata = json.load(jfile)
-        jdata['time'] = time
-        with open('setting.json', mode='w', encoding='utf8') as jfile:
-            json.dump(jdata, jfile, indent=4)
-        await ctx.send(f'『公告設定』自動公告發送時間 已設定為 [{time}]')
+        save_settings({"time": cleaned})
+        self.last_sent_date = None
+        await ctx.send(f"『公告設定』自動公告發送時間已設定為 {cleaned[:2]}:{cleaned[2:]}")
 
-    #指令-set_auto_ch  設定發送公告頻道
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def set_auto_ch(self, ctx, ch:int):
-        await ctx.message.delete()
-        self.channel = self.bot.get_channel(ch)
-        await ctx.send(f'『公告設定』自動公告頻道 已設定為 [{self.channel.mention}] 頻道')
-    
-    #指令-
+    async def set_auto_ch(self, ctx, channel_id: int = None):
+        await delete_invocation(ctx)
+        channel_id = channel_id or ctx.channel.id
+        channel = self.bot.get_channel(channel_id)
+        if channel is None:
+            await ctx.send("『公告設定』找不到這個頻道。")
+            return
+
+        save_settings({"auto_message_channel": str(channel_id)})
+        await ctx.send(f"『公告設定』自動公告頻道已設定為 {channel.mention}")
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def set_auto_msg(self, ctx, *, message):
+        await delete_invocation(ctx)
+        save_settings({"auto_message": message})
+        await ctx.send("『公告設定』自動公告內容已更新。")
+
     @commands.command()
     async def abc(self, ctx):
-        now_time = datetime.datetime.now().strftime('%H%M')
-        print(now_time)
+        await ctx.send(datetime.now().strftime("%H%M"))
 
-def setup(bot):
-    bot.add_cog(Time_message(bot))
+
+async def setup(bot):
+    await bot.add_cog(Time_message(bot))

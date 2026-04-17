@@ -1,58 +1,56 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.config import get_settings
 from core.loggee import Loggee
-from core.classes import Cog_Extension #導入Cog_extension 的定義
-import random #導入random的模組
-import json  #導入json的檔案形式
-import datetime
-import re
-#讀取setting.json檔案
-with open('setting.json','r', encoding='utf8') as jfile:
-    jdata = json.load(jfile)
+
+
+KEYWORD_REPLIES = {
+    "早安": "早安! 祝你有個美好的一天!",
+    "早": "早安! 祝你有個美好的一天!",
+    "大家早安": "早安! 祝你有個美好的一天!",
+    "午安": "午安!",
+    "睡午覺": "午安!",
+    "晚安": "晚安! 祝你有個好夢!",
+    "我先睡了": "晚安! 祝你有個好夢!",
+    "?": "https://tenor.com/view/nick-young-question-mark-huh-what-confused-gif-4995479",
+    "wtf": "https://tenor.com/view/nick-young-question-mark-huh-what-confused-gif-4995479",
+    "嗨起來": "有人提到嗨起來嗎!?\nhttps://tenor.com/view/high-gif-5005257",
+}
+
+
+def _normalise(content):
+    return content.strip().rstrip("!！?？").lower()
+
+
+def _indecent_words():
+    words = get_settings().get("Indecent_words") or []
+    if isinstance(words, str):
+        words = [item.strip() for item in words.split(",")]
+    return {word.lower() for word in words if word}
+
 
 class Msg(Cog_Extension):
-        
-    #訊息對話
     @commands.Cog.listener()
     async def on_message(self, msg):
-        #早安
-        keyword = ['早安', '早', '早安!', ' 早!', '大家早安', '大家早安!', '大家早安阿', '大家早安啊', '大家早安ㄚ', '大家早安阿!', '大家早安啊!', '大家早安ㄚ!']
-        if msg.content == keyword and msg.author != self.bot.user:
-            await msg.channel.send('早安! 祝你有個美好的一天!')
-            Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了 [早安! 祝你有個美好的一天!]')
-        #午安
-        keyword = ['午安', '午安!', '睡午覺', '睡午覺!']
-        if msg.content in keyword and msg.author != self.bot.user:
-            await msg.channel.send('午安!')
-            Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 的關鍵字 因此 觸發了[午安!]')
-        #晚安        
-        keyword = ['晚安', '晚安!', '我先睡了', '我先睡了!']
-        if msg.content in keyword and msg.author != self.bot.user:
-            await msg.channel.send('晚安! 祝你有個好夢!')
-            Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[晚安! 祝你有個好夢!]')
-        #?
-        keyword = ['?', 'wtf', 'Wtf', 'WTF', 'wtf!', 'Wtf!', 'WTF!', 'wtf?', 'Wtf?', 'WTF?']
-        if msg.content in keyword and msg.author != self.bot.user:
-            await msg.channel.send('https://tenor.com/view/nick-young-question-mark-huh-what-confused-gif-4995479')
-            Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[https://tenor.com/view/nick-young-question-mark-huh-what-confused-gif-4995479]')
-        #嗨起來
-        keyword = ['嗨起來', '嗨起來!']
-        if msg.content in keyword and msg.author != self.bot.user:
-            await msg.channel.send('有人提到嗨起來嗎!?')
-            await msg.channel.send('https://tenor.com/view/high-gif-5005257')
-            Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[有人提到嗨起來嗎!? https://tenor.com/view/high-gif-5005257]')
-        #警告機制
-        keyword = ['Fuck', 'FUck', 'FUCk', 'FUCK', 'fUCK', 'fuCK', 'fucK', 'fuck', 'fUck', 'fUCk', 'fUCK', 'FUck', 'FUCk', 'FuCk', 'FUcK', 'FuCk', '幹你娘', '操你媽', '幹', '看屁阿鄉巴佬']
-        if msg.content in keyword and msg.author !=self.bot.user:
-            if msg.guild.id == 447628147286999042:
+        if msg.author.bot:
+            return
+
+        normalised = _normalise(msg.content)
+        for keyword, reply in KEYWORD_REPLIES.items():
+            if normalised == _normalise(keyword):
+                await msg.channel.send(reply)
+                Loggee(f"『訊息觸發』[{msg.author}] 觸發關鍵字 [{keyword}]")
+                return
+
+        if normalised in _indecent_words():
+            try:
                 await msg.delete()
-                self.channel = self.bot.get_channel(669130768072704002)
-                is_msg(keyword, F'{msg.content}')
-                await self.channel.send(F'『{msg.author.mention}』請勿輸入相關不雅詞語!  懲罰: 警告x1')
-                Loggee(F'『訊息觸發』[{msg.author}] 輸入了 [{msg.content}] 因此 觸發了[警告機制]')
+            except Exception:
+                pass
+            await msg.channel.send(f"{msg.author.mention} 請勿輸入不雅詞語。", delete_after=8)
+            Loggee(f"『訊息觸發』[{msg.author}] 觸發不雅詞語過濾")
 
-            #await channel.send(F'使用者『{msg.author}』 刪除了 〔{msg.content}〕')
 
-def setup(bot):
-    bot.add_cog(Msg(bot))
+async def setup(bot):
+    await bot.add_cog(Msg(bot))

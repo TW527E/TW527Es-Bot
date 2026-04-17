@@ -1,125 +1,119 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
-import random #導入random的模組
-import json  #導入json的檔案形式
-import datetime
+import discord
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.config import get_guild_configs, int_or_none
+from core.discord_helpers import avatar_url
 from core.loggee import Loggee
 
-#讀取setting.json檔案
-with open('setting.json','r', encoding='utf8') as jfile:
-    jdata = json.load(jfile)
 
-#讀取 servers/taiwanmc.json檔案
-with open('servers/taiwanmc.json', 'r', encoding='utf8') as tmc:
-    taiwanmc_data = json.load(tmc)
+def _find_config(guild_id):
+    for config in get_guild_configs():
+        if config.get("guild_id") == guild_id:
+            return config
+    return None
 
-#讀取 servers/IT.json檔案
-with open('servers/IT.json', 'r', encoding='utf8') as itt:
-    it_data = json.load(itt)
 
-class member(Cog_Extension):
-        
-    #伺服器通知-有人加入了伺服器(setting.json)
+async def _send_member_notice(bot, channel_id, title, member):
+    channel_id = int_or_none(channel_id)
+    channel = bot.get_channel(channel_id) if channel_id else None
+    if channel is None:
+        return
+
+    embed = discord.Embed(title=title, color=0xD08A2B)
+    embed.set_thumbnail(url=avatar_url(member))
+    await channel.send(embed=embed)
+
+
+class Member(Cog_Extension):
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        if str(member.guild.id) == str(taiwanmc_data['guild_id']): #TaiwanMC
-            print(F'[{nnow}]> 『{member}』 加入了《{member.guild.name}》伺服器')
-            channel = self.bot.get_channel(int(taiwanmc_data['member_join_channel']))
-            embed=discord.Embed(title=F"『{member}』 加入了伺服器", color=0xd08a2b)
-            embed.set_thumbnail(url="{}".format(member.avatar_url))
-            await channel.send(embed=embed)
-            '''await channel.send(F'>> {member.mention} << 加入了伺服器')'''
-        if str(member.guild.id) == str(it_data['guild_id']): #IT
-            print(F'[{nnow}]> 『{member}』 加入了《{member.guild.name}》伺服器')
-            channel = self.bot.get_channel(int(it_data['member_join_channel']))
-            embed=discord.Embed(title=F"『{member}』 加入了伺服器", color=0xd08a2b)
-            embed.set_thumbnail(url="{}".format(member.avatar_url))
-            await channel.send(embed=embed)
-            '''await channel.send(F'>> {member.mention} << 加入了伺服器')'''
-        else:
-            pass
+        config = _find_config(member.guild.id)
+        if config is None:
+            return
 
-    #伺服器通知-有人退出了伺服器(setting.json)
+        Loggee(f"『{member}』 加入了《{member.guild.name}》伺服器")
+        await _send_member_notice(
+            self.bot,
+            config.get("member_join_channel"),
+            f"『{member}』 加入了伺服器",
+            member,
+        )
+
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        if str(member.guild.id) == str(taiwanmc_data['guild_id']): #TaiwanMC
-            print(F'[{nnow}]> 『{member}』 退出了"{member.guild.name}"')
-            channel = self.bot.get_channel(int(jdata['member_leave_channel']))
-            await channel.send(F'>> {member} << 退出了伺服器')
-        if str(member.guild.id) == str(it_data['guild_id']): #IT
-            print(F'[{nnow}]> 『{member}』 退出了《{member.guild.name}》伺服器')
-            channel = self.bot.get_channel(int(it_data['member_leave_channel']))
-            embed=discord.Embed(title=F"『{member}』 退出了伺服器", color=0xd08a2b)
-            embed.set_thumbnail(url="{}".format(member.avatar_url))
-            await channel.send(embed=embed)
-        else:
-            pass
+        config = _find_config(member.guild.id)
+        if config is None:
+            return
 
-    #伺服器-Reaction Role 新增反應貼圖獲得身分組
+        Loggee(f"『{member}』 退出了《{member.guild.name}》伺服器")
+        await _send_member_notice(
+            self.bot,
+            config.get("member_leave_channel"),
+            f"『{member}』 退出了伺服器",
+            member,
+        )
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        #TaiwanMC
-#        if int(payload.message_id) == int(taiwanmc_data['Reaction_Msg']):
-#           if str(payload.emoji) == str(taiwanmc_data['Reaction_Emoji']):
-#               guild = self.bot.get_guild(payload.guild_id)
-#               role = guild.get_role(int(taiwanmc_data['Reaction_Role']))
-#               emoji = self.bot.get_emoji(payload.emoji.id)
-#                user = self.bot.get_user(payload.user_id)
-#                channel = self.bot.get_channel(payload.channel_id)
-#                message = await channel.fetch_message(payload.message_id)
-#                print(F'[{nnow}]> 《{guild.name}》『{payload.member}』加入反應 已獲得《{role.name}》')
-#                await message.remove_reaction(emoji, user)
-#                await payload.member.add_roles(role)
-#                await payload.member.send('''恭喜你成為了『TaiwanMC』的一員:partying_face: 
-#                你獲得了 『Steve』 身分組
-#                歡迎在內進行合理的交流~
-#                
-#                (我是群主自製小機器人喔)''')
-        #ITDT
-        if int(payload.message_id) == int(it_data['Reaction_Msg']):
-            if str(payload.emoji) == str(it_data['Reaction_Emoji']):
-                guild = self.bot.get_guild(payload.guild_id)
-                role = guild.get_role(int(it_data['Reaction_Role']))
-                print(F'[{nnow}]> 『{payload.member}』加入反應 已獲得《{role.name}》')
-                await payload.member.add_roles(role)
-                await payload.member.send(F'《恭喜》你已獲得了 《{role.name}》')
-                await payload.member.send(F'《Congratulations》you have won 《{role.name}》')
-        
-    #伺服器-Reaction Role 移除反應貼圖移除身分組
+        if payload.guild_id is None or payload.member is None:
+            return
+
+        config = _find_config(payload.guild_id)
+        if config is None:
+            return
+
+        reaction_message_id = int_or_none(config.get("Reaction_Msg"))
+        reaction_role_id = int_or_none(config.get("Reaction_Role"))
+        reaction_emoji = str(config.get("Reaction_Emoji") or "")
+        if payload.message_id != reaction_message_id or str(payload.emoji) != reaction_emoji:
+            return
+
+        guild = self.bot.get_guild(payload.guild_id)
+        role = guild.get_role(reaction_role_id) if guild and reaction_role_id else None
+        if role is None:
+            return
+
+        await payload.member.add_roles(role, reason="Reaction role")
+        Loggee(f"《{guild.name}》『{payload.member}』透過反應獲得《{role.name}》")
+        try:
+            await payload.member.send(f"《恭喜》你已獲得了《{role.name}》")
+        except discord.Forbidden:
+            pass
+
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        now = str(datetime.datetime.now())
-        loc = now.rfind('.')
-        nnow = now[:loc]
-        #TaiwanMC
-#        if str(payload.message_id) == str(taiwanmc_data['Reaction_Msg']):
-#            if str(payload.emoji) == taiwanmc_data['Reaction_Emoji']:
-#                guild = self.bot.get_guild(payload.guild_id)
-#                user = guild.get_member(payload.user_id)
-#                Loggee(F'[{nnow}]> 《{guild.name}》『{payload.member}』加入反應 已獲得《{payload.role.name}》')
-#                role = guild.get_role(int(taiwanmc_data['Reaction_Role']))
-#                await user.remove_roles(role)
-#                await user.send('.....')
-        #ITDT
-        if str(payload.message_id) == str(it_data['Reaction_Msg']):
-            if str(payload.emoji) == it_data['Reaction_Emoji']:
-                guild = self.bot.get_guild(payload.guild_id)
-                user = guild.get_member(payload.user_id)
-                print(F'[{nnow}]> 《{guild.name}》『{payload.member}』加入反應 已獲得《{role.name}》')
-                role = guild.get_role(int(it_data['Reaction_Role']))
-                await user.remove_roles(role)
-                await user.send('.....')
+        if payload.guild_id is None:
+            return
 
-def setup(bot):
-    bot.add_cog(member(bot))
+        config = _find_config(payload.guild_id)
+        if config is None:
+            return
+
+        reaction_message_id = int_or_none(config.get("Reaction_Msg"))
+        reaction_role_id = int_or_none(config.get("Reaction_Role"))
+        reaction_emoji = str(config.get("Reaction_Emoji") or "")
+        if payload.message_id != reaction_message_id or str(payload.emoji) != reaction_emoji:
+            return
+
+        guild = self.bot.get_guild(payload.guild_id)
+        if guild is None:
+            return
+
+        role = guild.get_role(reaction_role_id) if reaction_role_id else None
+        member = guild.get_member(payload.user_id)
+        if member is None:
+            try:
+                member = await guild.fetch_member(payload.user_id)
+            except discord.NotFound:
+                return
+
+        if role is None:
+            return
+
+        await member.remove_roles(role, reason="Reaction role removed")
+        Loggee(f"《{guild.name}》『{member}』移除反應並失去《{role.name}》")
+
+
+async def setup(bot):
+    await bot.add_cog(Member(bot))

@@ -1,46 +1,26 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
-from core.loggee import Loggee
-import os
-import nacl
-import json
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.discord_helpers import delete_invocation
+
 
 class Channel(Cog_Extension):
-    
-    @commands.command(aliases=['j', 'joi', 'summon'])
-    async def join(self, ctx):
-        print(f'《語音頻道》〔{ctx.author}〕 輸入 [join] 使機器人加入頻道')
-        await ctx.message.delete()
-        channel = ctx.author.voice.channel
-        await channel.connect()
-        await ctx.send(f'《語音頻道》已加入到 《**{channel}**》')
-
-
-    @commands.command(aliases=['l', 'lea', 'leav', 'kill'])
-    async def leave(self, ctx):
-        print(f'《語音頻道》〔{ctx.author}〕 輸入 [leave] 使機器人退出頻道')
-        await ctx.message.delete()
-        await ctx.voice_client.disconnect()
-        await ctx.send('《語音頻道》已退出 **語音頻道**')
+    @commands.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def add_text_ch(self, ctx, *, name):
+        await delete_invocation(ctx)
+        channel = await ctx.guild.create_text_channel(name, reason=f"{ctx.author} created by command")
+        await ctx.send(f"《文字頻道》已建立 {channel.mention}")
 
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def add_text_ch(self, ctx, *, msg):
-        guild = ctx.message.guild
-        print(f'《文字頻道》創建名為 {msg} 文字頻道 在 **{guild}** 伺服器')
-        await guild.create_text_channel(msg)
-        await ctx.send(f'《文字頻道》創建名為 {msg} 文字頻道 在 **{guild}** 伺服器')
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    async def add_voice_ch(self, ctx, *, name):
+        await delete_invocation(ctx)
+        channel = await ctx.guild.create_voice_channel(name, reason=f"{ctx.author} created by command")
+        await ctx.send(f"《語音頻道》已建立 **{channel.name}**")
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def add_voice_ch(self, ctx, category=None, *, msg):
-        guild = ctx.message.guild
-        print(f'《語音頻道》創建名為 {msg} 語音頻道 在 **{guild}** 伺服器')
-        await guild.create_voice_channel(F"{msg}", category)
-        await ctx.send(f'《語音頻道》創建名為 {msg} 語音頻道 在〘**{guild}**〙')
-        
 
-def setup(bot):
-    bot.add_cog(Channel(bot))
+async def setup(bot):
+    await bot.add_cog(Channel(bot))

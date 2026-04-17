@@ -1,115 +1,45 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
+import discord
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.config import get_settings
+from core.discord_helpers import delete_invocation
+
 
 class Help(Cog_Extension):
+    @commands.command(name="help")
+    async def help_command(self, ctx, category=None):
+        await delete_invocation(ctx)
+        prefix = get_settings().get("prefix", "|")
 
-    #指令-指令幫助
-    @commands.command()
-    async def help(self, ctx, helpnumber=None):
-        print(F'《指令》〔{ctx.author}〕 輸入 [help 指令提示幫助] 指令')
-        await ctx.message.delete()
-        if helpnumber == None:
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=True)
-            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=False)
-            embed.add_field(name="-------------------", value="指令幫助指令", inline=True)
-            embed.add_field(name="|help", value="指令提示幫助", inline=False)
-            embed.add_field(name="|help 1", value="指令提示幫助1", inline=True)
-            embed.add_field(name="|help 2", value="指令提示幫助2", inline=False)
-            embed.add_field(name="|help music", value="指令提示幫助 音樂分類 ", inline=True)
-            embed.add_field(name="-------------------", value="其他指令", inline=False)
-            embed.add_field(name="@|invite", value="獲取機器人邀請碼", inline=True)
-            await ctx.send(embed=embed)
-        elif helpnumber == '1':
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助1↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=False)
-            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=True)
-            embed.add_field(name="-------------------", value="基本指令", inline=False)
-            embed.add_field(name="|ping", value="機器人延遲", inline=True)
-            embed.add_field(name="*|kick <@使用者>", value="kick user 讓機器人踢出 指定使用者", inline=False)
-            embed.add_field(name="*|ban <@使用者>", value="ban user 讓機器人封鎖 指定使用者", inline=True)
-            embed.add_field(name="*|unban <使用者>", value="unban user 讓機器人解除封鎖 指令使用者", inline=False)
-            embed.add_field(name="@|logout", value="logout 機器人登出(關機)", inline=True)
-            embed.add_field(name="-------------------", value="訊息指令", inline=False)
-            embed.add_field(name="*|say_msg <訊息內容>", value="say_message 使機器人傳送一則您指令的訊息", inline=True)
-            embed.add_field(name="*|del_msg <訊息數量>", value="del_message 刪除指定數量的訊息", inline=False)
-            embed.add_field(name="|MC", value="MC img 傳送隨機的 Minecraft 圖片", inline=True)
-            embed.add_field(name="|url_img", value="MC img 傳送網路上隨機的 Minecraft 圖片", inline=False)
-            embed.add_field(name="|now_time", value="now time 現在時間顯示", inline=True)
-            embed.add_field(name="|avatar", value="avatar 顯示指令使用者頭像", inline=False)
-            embed.add_field(name="-------------------", value="狀態指令", inline=True)
-            embed.add_field(name="@|shutdown", value="shutdown bot 關閉機器人", inline=False)
-            embed.add_field(name="@|online", value="online bot 上線機器人", inline=True)
-            embed.add_field(name="@|idle", value="idle bot 閒置機器人", inline=False)
-            embed.add_field(name="@|dnd", value="dnd bot 勿擾機器人", inline=True)
-            embed.add_field(name="-------------------", value="公告指令", inline=False)
-            embed.add_field(name="*|set_auto_ch <頻道ID>", value="set auto message channel 設定 發送公告訊息 頻道", inline=True)
-            embed.add_field(name="*|set_auto_time <時間>", value="set auto message time 設定 發送公告訊息 的秒數", inline=False)
-            await ctx.send(embed=embed)
-        elif helpnumber == '2':
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助2↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=True)
-            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=False)
-            embed.add_field(name="-------------------", value="語音頻道指令", inline=True)
-            embed.add_field(name="|join", value="Join Voice Channel 加入到語音頻道", inline=False)
-            embed.add_field(name="|leave", value="Leave Voice Channel 離開語音頻道", inline=True)
-            embed.add_field(name="-------------------", value="語音頻道指令", inline=False)
-            embed.add_field(name="*|add_text_ch", value="Create Text Channel 創建文字頻道", inline=True)
-            embed.add_field(name="*|add_voice_ch", value="Create Voice Channel 創建語音頻道", inline=False)
-            embed.add_field(name="-------------------", value="插件指令", inline=True)
-            embed.add_field(name="@|load <插件檔案名>", value="Load plugin 載入插件", inline=False)
-            embed.add_field(name="@|unload <插件檔案名>", value="Unload plugin 卸載插件", inline=True)
-            embed.add_field(name="@|reload <插件檔案名>", value="Reload plugin 重新載入插件", inline=False)
-            embed.add_field(name="@|reload_all", value="Reload all plugin 重新載入所有插件", inline=True)
-            embed.add_field(name="-------------------", value="插件", inline=False)
-            embed.add_field(name="cmds.Main", value="基本", inline=True)
-            embed.add_field(name="cmds.Message", value="訊息", inline=False)
-            embed.add_field(name="cmds.Status", value="狀態", inline=True)
-            embed.add_field(name="cmds.Time_message", value="公告", inline=False)
-            embed.add_field(name="cmds.Channel", value="文字.語音頻道", inline=True)
-            embed.add_field(name="cmds.Music", value="音樂", inline=False)
-            embed.add_field(name="event.Member", value="成員加入.退出", inline=True)
-            embed.add_field(name="event.Msg", value="自動回覆訊息", inline=False)
-            embed.add_field(name="cmds.Help", value="指令提示幫助", inline=True)
-            await ctx.send(embed=embed)
-        elif helpnumber == 'music':
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助 音樂分類↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="指令前方加上* = 僅擁有*管理者*權限的人可使用指令 不代表管理員可以用", inline=False)
-            embed.add_field(name="備註2", value="指令前方加上@ = 僅限 機器人擁有者 也就是寫的人 可以打的指令", inline=True)
-            embed.add_field(name="-------------------", value="音樂指令", inline=False)
-            embed.add_field(name="|play <音樂連結>", value="播放音樂", inline=True)
-            embed.add_field(name="|stop", value="停止播放音樂", inline=False)
-            embed.add_field(name="|pause", value="暫停音樂", inline=True)
-            embed.add_field(name="|resume", value="繼續播放音樂", inline=False)
-            embed.add_field(name="|queue <音樂連結>", value="新增音樂", inline=True)
-            embed.add_field(name="|volume <音量大小 單位:%>", value="調整音量大小", inline=False)
-            embed.add_field(name="|next", value="下一首音樂", inline=True)
-            await ctx.send(embed=embed)
-        elif helpnumber == 'boom':
-            if await ctx.author.is_owner() == True:
-                await ctx.send('你怎麼知道這個分類的??')
-                return
-            embed=discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助 炸群分類↓", color=0x28d252)
-            embed.set_thumbnail(url="https://images-na.ssl-images-amazon.com/images/I/31ORJ91xCUL._SY355_.jpg")
-            embed.add_field(name="備註1", value="僅機器人擁有者可以用", inline=True)
-            embed.add_field(name="-------------------", value="炸群指令", inline=False)
-            embed.add_field(name="|play <音樂連結>", value="播放音樂", inline=True)
-            embed.add_field(name="|stop", value="停止播放音樂", inline=False)
-            embed.add_field(name="|pause", value="暫停音樂", inline=True)
-            embed.add_field(name="|resume", value="繼續播放音樂", inline=False)
-            embed.add_field(name="|queue <音樂連結>", value="新增音樂", inline=True)
-            embed.add_field(name="|volume <音量大小 單位:%>", value="調整音量大小", inline=False)
-            embed.add_field(name="|skip", value="下一首音樂 (Aliases:|ski , |next , |", inline=True)
-            user = ctx.author
-            await user.send(embed=embed)
-        else:
-            await ctx.send('『指令提示幫助』 痾 你可能打錯了甚麼東西')
-            
-def setup(bot):
-    bot.add_cog(Help(bot))
+        pages = {
+            None: [
+                ("基本", f"`{prefix}ping`, `{prefix}avatar`, `{prefix}info`, `{prefix}guild`, `{prefix}level`"),
+                ("管理", f"`{prefix}kick`, `{prefix}ban`, `{prefix}unban`, `{prefix}del_msg`, `{prefix}say_msg`, `{prefix}vote`"),
+                ("伺服器", f"`{prefix}add_text_ch`, `{prefix}add_voice_ch`, `{prefix}roles`, `{prefix}add_role`, `{prefix}remove_role`"),
+                ("Owner", f"`{prefix}invite`, `{prefix}load`, `{prefix}unload`, `{prefix}reload`, `{prefix}reload_all`, `{prefix}status`"),
+            ],
+            "basic": [
+                ("一般指令", f"`{prefix}ping` 延遲\n`{prefix}avatar [@使用者]` 頭像\n`{prefix}info [@使用者]` 使用者資訊\n`{prefix}guild` 伺服器資訊\n`{prefix}now_time` 現在時間"),
+                ("圖片", f"`{prefix}MC` 隨機本機 Minecraft 圖片\n`{prefix}url_img` 隨機網路圖片\n`{prefix}G <檔名>` 傳送 G 資料夾圖片"),
+            ],
+            "admin": [
+                ("管理指令", f"`{prefix}kick @使用者 [原因]`\n`{prefix}ban @使用者 [原因]`\n`{prefix}unban 使用者#0000`\n`{prefix}del_msg 數量`\n`{prefix}say_msg 訊息`\n`{prefix}say_dm @使用者 訊息`"),
+                ("伺服器指令", f"`{prefix}add_text_ch 名稱`\n`{prefix}add_voice_ch 名稱`\n`{prefix}add_role @使用者 @身分組`\n`{prefix}remove_role @使用者 @身分組`"),
+            ],
+        }
+
+        key = category.lower() if isinstance(category, str) else None
+        fields = pages.get(key)
+        if fields is None:
+            await ctx.send("『指令提示幫助』找不到這個分類。可用分類: basic, admin")
+            return
+
+        embed = discord.Embed(title="TaiwanMC-苦力怕同學", description="指令提示幫助", color=0x28D252)
+        for name, value in fields:
+            embed.add_field(name=name, value=value, inline=False)
+        await ctx.send(embed=embed)
+
+
+async def setup(bot):
+    await bot.add_cog(Help(bot))

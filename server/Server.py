@@ -1,103 +1,77 @@
-#導入 模組
-import discord  #導入Discord.py的專案
-from discord.ext import commands  #導入指令
-from core.classes import Cog_Extension #導入Cog_extension 的定義
+import discord
+from discord.ext import commands
+
+from core.classes import Cog_Extension
+from core.discord_helpers import avatar_url, delete_invocation, guild_icon_url
 from core.loggee import Loggee
-#import utils
-#from discord.utils import get
+
 
 class Server(Cog_Extension):
-
-    #指令 - set_server_name - 設定伺服器名稱
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def set_server_name(self, ctx, *,name):
-        Loggee(f'『指令-更改伺服器名稱』 {ctx.author.name} 在 {ctx.guild.name} 修改伺服器名稱為:[{name}]')
-        await ctx.message.delete()
-        guild_name = ctx.message.guild.name
-        guild = ctx.message.guild
-        await ctx.guild.edit(name=name)
-        embed = discord.Embed(title=F"『指令-更改伺服器名稱』", description="[點此到達伺服器頭像連結](%s)" % guild.icon_url, color=0xd08a2b)
-        embed.set_thumbnail(url=F"{guild.icon_url}")
-        embed.add_field(name="更改前的伺服器名稱", value=F"{guild_name}", inline=True)
-        embed.add_field(name="更改後的伺服器名稱", value=F"{name}", inline=False)
-        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
+    async def set_server_name(self, ctx, *, name):
+        await delete_invocation(ctx)
+        before = ctx.guild.name
+        await ctx.guild.edit(name=name, reason=f"{ctx.author} changed server name")
+
+        icon = guild_icon_url(ctx.guild)
+        embed = discord.Embed(title="『指令-更改伺服器名稱』", color=0xD08A2B)
+        if icon:
+            embed.description = f"[點此到達伺服器頭像連結]({icon})"
+            embed.set_thumbnail(url=icon)
+        embed.add_field(name="更改前的伺服器名稱", value=before, inline=True)
+        embed.add_field(name="更改後的伺服器名稱", value=name, inline=False)
+        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
+        Loggee(f"『指令-更改伺服器名稱』 {ctx.author.name} 在 {before} 修改伺服器名稱為 {name}")
         await ctx.send(embed=embed)
 
-    #指令 - add_role
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def add_role(self, ctx, member: discord.Member=None, *, role: discord.Role):
-        Loggee(f'『增加使用者身分組』 {ctx.author.name} 在 {ctx.guild.name} 建立了 {role} 身分組')
-        embed = discord.Embed(title=F"『更改使用者身分組』", description="增加使用者身分組", color=0xd08a2b)
-        embed.set_thumbnail(url=F"{member.avatar_url}")
-        embed.add_field(name="使用者", value=F"{member}", inline=True)
-        embed.add_field(name="身分組", value=F"{role}", inline=False)
-        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-        await member.add_roles(role)
-
-    #指令 - remove_role
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def remove_role(self, ctx, member: discord.Member=None, *, role: discord.Role):
-        Loggee(f'『刪除使用者身分組』 {ctx.author.name} 在 {ctx.guild.name} 刪除了 {role} 身分組')
-        embed = discord.Embed(title=F"『更改使用者身分組』", description="刪除使用者身分組", color=0xd08a2b)
-        embed.set_thumbnail(url=F"{member.avatar_url}")
-        embed.add_field(name="使用者", value=F"{member}", inline=True)
-        embed.add_field(name="身分組", value=F"{role}", inline=False)
-        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-        await member.remove_roles(role)
-
-    #指令-
-    @commands.command()
-    async def create_role(self, ctx, role):
-        await ctx.guild.create_role(role, reason=F'{ctx.author.name} 輸入指令創建此身份組')
-
-    #指令 - 
-    @commands.command() 
-    async def send_guild(self, ctx, *, msg):
-        counter = 0
-        guild = ctx.message.guild
-        #output = ' '
-        author = ctx.message.author
-        """for word in msg:
-            output += word
-            output += ' '"""
-        for member in self.bot.get_all_members():
-            try:
-                embed = discord.Embed(title="", color=0xd08a2b)
-                embed.add_field(name="**From server:**", value=guild.name)
-                embed.add_field(name = "**From Mod/Admin:**", value=author.name)
-                embed.add_field(name="**Message:**", value=msg)
-            #   await ctx.send(embed=embed)
-                
-                await member.send(embed=embed)
-            except (discord.HTTPException, discord.Forbidden,AttributeError):
-                if counter == 1:
-                    return
-                counter = 1
-                continue
+    @commands.guild_only()
+    @commands.has_permissions(manage_roles=True)
+    async def add_role(self, ctx, member: discord.Member, *, role: discord.Role):
+        await delete_invocation(ctx)
+        await member.add_roles(role, reason=f"{ctx.author} used add_role")
+        await self._send_role_embed(ctx, "增加使用者身分組", member, role)
 
     @commands.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_roles=True)
+    async def remove_role(self, ctx, member: discord.Member, *, role: discord.Role):
+        await delete_invocation(ctx)
+        await member.remove_roles(role, reason=f"{ctx.author} used remove_role")
+        await self._send_role_embed(ctx, "刪除使用者身分組", member, role)
+
+    @commands.command()
+    @commands.guild_only()
+    @commands.has_permissions(manage_roles=True)
+    async def create_role(self, ctx, *, name):
+        await delete_invocation(ctx)
+        role = await ctx.guild.create_role(name=name, reason=f"{ctx.author} created role")
+        await ctx.send(f"已建立身分組 {role.mention}")
+
+    @commands.command()
+    @commands.guild_only()
     async def roles(self, ctx):
-        Loggee(f'『群內所有身分組』 {ctx.author.name} 在 {ctx.guild.name} 輸入了 roles 顯示所有身分組')
-        embed = discord.Embed(title=F"『群內所有身分組』", description="群內所有身分組", color=0xd08a2b)
-        embed.set_thumbnail(url=F"{ctx.guild.icon_url}")
-        embed.add_field(name="群組", value=F"{ctx.guild.name}", inline=True)
-        embed.add_field(name="身分組", value=", ".join([str(r.mention) for r in ctx.guild.roles]), inline=False)
-        embed.set_footer(text=F"此指令由 {ctx.author} 輸入 • ", icon_url=ctx.author.avatar_url)
+        roles = [role.mention for role in ctx.guild.roles if role.name != "@everyone"]
+        embed = discord.Embed(title="『群內所有身分組』", description="群內所有身分組", color=0xD08A2B)
+        icon = guild_icon_url(ctx.guild)
+        if icon:
+            embed.set_thumbnail(url=icon)
+        embed.add_field(name="群組", value=ctx.guild.name, inline=True)
+        embed.add_field(name="身分組", value=", ".join(roles) or "無", inline=False)
+        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
         await ctx.send(embed=embed)
 
-    #指令 - add_role
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def add_reaction(self, msg, emo):
-        emoji = self.bot.get_emoji(emo)
-        message = await self.bot.get_message(msg)
-        await message.add_reaction(emoji)
+    async def _send_role_embed(self, ctx, title, member, role):
+        embed = discord.Embed(title=f"『{title}』", color=0xD08A2B)
+        embed.set_thumbnail(url=avatar_url(member))
+        embed.add_field(name="使用者", value=member.mention, inline=True)
+        embed.add_field(name="身分組", value=role.mention, inline=False)
+        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
+        Loggee(f"『{title}』 {ctx.author.name} 在 {ctx.guild.name} 對 {member} 操作 {role}")
+        await ctx.send(embed=embed)
 
-def setup(bot):
-    bot.add_cog(Server(bot))
+
+async def setup(bot):
+    await bot.add_cog(Server(bot))

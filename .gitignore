@@ -1,2 +1,41 @@
-*.md
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local secrets and runtime config
+.env
+.env.*
+!.env.example
+setting.json
+setting.bot.json
+servers/*.json
+!servers/*.example.json
+
+# Runtime data/cache
+Log/
+*.log
+data/*.json
+downloads/
+Queue/
+Queue_Wait/
+*.mp3
+*.wav
+*.m4a
+*.webm
+
+# Editors and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
