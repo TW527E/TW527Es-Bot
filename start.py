@@ -57,11 +57,29 @@ class TW527EBot(commands.Bot):
     async def sync_application_commands(self):
         guild_configs = get_guild_configs()
         if guild_configs:
+            synced_guilds = 0
             for config in guild_configs:
-                guild = discord.Object(id=config["guild_id"])
+                guild_id = config["guild_id"]
+                guild = discord.Object(id=guild_id)
                 self.tree.copy_global_to(guild=guild)
-                synced = await self.tree.sync(guild=guild)
-                Loggee(f"已同步 {len(synced)} 個斜線指令到 guild {config['guild_id']}")
+                try:
+                    synced = await self.tree.sync(guild=guild)
+                except discord.Forbidden:
+                    Loggee(
+                        f"略過 guild {guild_id} 斜線指令同步：Missing Access。"
+                        "請確認 bot 已加入該伺服器，且邀請 scope 包含 applications.commands。"
+                    )
+                    continue
+
+                synced_guilds += 1
+                Loggee(f"已同步 {len(synced)} 個斜線指令到 guild {guild_id}")
+
+            if synced_guilds:
+                return
+
+            Loggee("所有設定的 guild 都無法同步斜線指令，改同步全域斜線指令。")
+            synced = await self.tree.sync()
+            Loggee(f"已同步 {len(synced)} 個全域斜線指令")
             return
 
         synced = await self.tree.sync()
