@@ -1,8 +1,10 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from core.classes import Cog_Extension
-from core.discord_helpers import avatar_url, delete_invocation, guild_icon_url
+from core.discord_helpers import avatar_url, guild_icon_url
+from core.interactions import chunk_values, respond
 
 
 STATUS_TEXT = {
@@ -14,11 +16,10 @@ STATUS_TEXT = {
 
 
 class Info(Cog_Extension):
-    @commands.command()
-    @commands.guild_only()
-    async def guild(self, ctx):
-        await delete_invocation(ctx)
-        guild = ctx.guild
+    @app_commands.command(name="guild", description="查看伺服器資訊")
+    @app_commands.guild_only()
+    async def guild(self, interaction: discord.Interaction):
+        guild = interaction.guild
         icon = guild_icon_url(guild)
         embed = discord.Embed(title=guild.name, color=0xD08A2B)
         if icon:
@@ -30,14 +31,14 @@ class Info(Cog_Extension):
         embed.add_field(name="伺服器創建日期", value=guild.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
         embed.add_field(name="伺服器 ID", value=str(guild.id), inline=True)
         embed.add_field(name="伺服器目前成員數量", value=str(guild.member_count), inline=False)
-        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
-        await ctx.send(embed=embed)
+        embed.set_footer(text=f"此指令由 {interaction.user} 輸入", icon_url=avatar_url(interaction.user))
+        await respond(interaction, embed=embed, ephemeral=True)
 
-    @commands.command()
-    @commands.guild_only()
-    async def info(self, ctx, member: discord.Member = None):
-        await delete_invocation(ctx)
-        member = member or ctx.author
+    @app_commands.command(name="info", description="查看使用者資訊")
+    @app_commands.describe(member="要查看的成員，留空則查看自己")
+    @app_commands.guild_only()
+    async def info(self, interaction: discord.Interaction, member: discord.Member | None = None):
+        member = member or interaction.user
         url = avatar_url(member)
         roles = [role.mention for role in member.roles if role.name != "@everyone"]
         status = STATUS_TEXT.get(str(member.status), "無法得知")
@@ -47,18 +48,20 @@ class Info(Cog_Extension):
         embed.set_thumbnail(url=url)
         embed.add_field(name="使用者名稱", value=member.name, inline=True)
         embed.add_field(name="目前狀態", value=status, inline=False)
-        embed.add_field(name="目前狀態消息", value=activity, inline=True)
+        embed.add_field(name="目前狀態消息", value=activity[:1024], inline=True)
         embed.add_field(name="此帳號創建日期", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
         embed.add_field(
             name="此帳號加入此群日期",
             value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S") if member.joined_at else "未知",
             inline=True,
         )
-        embed.add_field(name="在此群擁有的所有身分組", value=", ".join(roles) or "無", inline=False)
+        for index, chunk in enumerate(chunk_values(roles), start=1):
+            name = "在此群擁有的所有身分組" if index == 1 else f"身分組 {index}"
+            embed.add_field(name=name, value=chunk, inline=False)
         embed.add_field(name="使用者是否為機器人", value="是機器人" if member.bot else "不是機器人", inline=True)
         embed.add_field(name="使用者 ID", value=str(member.id), inline=False)
-        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
-        await ctx.send(embed=embed)
+        embed.set_footer(text=f"此指令由 {interaction.user} 輸入", icon_url=avatar_url(interaction.user))
+        await respond(interaction, embed=embed, ephemeral=True)
 
 
 async def setup(bot):

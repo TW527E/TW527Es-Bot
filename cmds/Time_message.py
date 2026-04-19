@@ -1,10 +1,12 @@
 from datetime import datetime
 
+import discord
+from discord import app_commands
 from discord.ext import commands, tasks
 
 from core.classes import Cog_Extension
 from core.config import get_settings, int_or_none, save_settings
-from core.discord_helpers import delete_invocation
+from core.interactions import respond
 from core.loggee import Loggee
 
 
@@ -41,48 +43,48 @@ class Time_message(Cog_Extension):
     async def before_announcement_loop(self):
         await self.bot.wait_until_ready()
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def set_auto_time(self, ctx, time_text):
-        await delete_invocation(ctx)
+    @app_commands.command(name="set_auto_time", description="設定自動公告時間")
+    @app_commands.describe(time_text="HHMM 或 HH:MM，例如 0900 或 21:30")
+    @app_commands.default_permissions(administrator=True)
+    async def set_auto_time(self, interaction: discord.Interaction, time_text: str):
         cleaned = time_text.replace(":", "").strip()
         if len(cleaned) != 4 or not cleaned.isdigit():
-            await ctx.send("『公告設定』請使用 HHMM 或 HH:MM 格式，例如 0900 或 21:30。")
+            await respond(interaction, "『公告設定』請使用 HHMM 或 HH:MM 格式，例如 0900 或 21:30。", ephemeral=True)
             return
 
         hour = int(cleaned[:2])
         minute = int(cleaned[2:])
         if hour > 23 or minute > 59:
-            await ctx.send("『公告設定』時間範圍錯誤。")
+            await respond(interaction, "『公告設定』時間範圍錯誤。", ephemeral=True)
             return
 
         save_settings({"time": cleaned})
         self.last_sent_date = None
-        await ctx.send(f"『公告設定』自動公告發送時間已設定為 {cleaned[:2]}:{cleaned[2:]}")
+        await respond(interaction, f"『公告設定』自動公告發送時間已設定為 {cleaned[:2]}:{cleaned[2:]}", ephemeral=True)
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def set_auto_ch(self, ctx, channel_id: int = None):
-        await delete_invocation(ctx)
-        channel_id = channel_id or ctx.channel.id
-        channel = self.bot.get_channel(channel_id)
-        if channel is None:
-            await ctx.send("『公告設定』找不到這個頻道。")
+    @app_commands.command(name="set_auto_ch", description="設定自動公告頻道")
+    @app_commands.describe(channel="公告頻道，留空則使用目前頻道")
+    @app_commands.guild_only()
+    @app_commands.default_permissions(administrator=True)
+    async def set_auto_ch(self, interaction: discord.Interaction, channel: discord.TextChannel | None = None):
+        channel = channel or interaction.channel
+        if not isinstance(channel, discord.TextChannel):
+            await respond(interaction, "『公告設定』請選擇文字頻道。", ephemeral=True)
             return
 
-        save_settings({"auto_message_channel": str(channel_id)})
-        await ctx.send(f"『公告設定』自動公告頻道已設定為 {channel.mention}")
+        save_settings({"auto_message_channel": str(channel.id)})
+        await respond(interaction, f"『公告設定』自動公告頻道已設定為 {channel.mention}", ephemeral=True)
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def set_auto_msg(self, ctx, *, message):
-        await delete_invocation(ctx)
+    @app_commands.command(name="set_auto_msg", description="設定自動公告內容")
+    @app_commands.describe(message="公告內容")
+    @app_commands.default_permissions(administrator=True)
+    async def set_auto_msg(self, interaction: discord.Interaction, message: str):
         save_settings({"auto_message": message})
-        await ctx.send("『公告設定』自動公告內容已更新。")
+        await respond(interaction, "『公告設定』自動公告內容已更新。", ephemeral=True)
 
-    @commands.command()
-    async def abc(self, ctx):
-        await ctx.send(datetime.now().strftime("%H%M"))
+    @app_commands.command(name="abc", description="顯示目前 HHMM 時間")
+    async def abc(self, interaction: discord.Interaction):
+        await respond(interaction, datetime.now().strftime("%H%M"), ephemeral=True)
 
 
 async def setup(bot):

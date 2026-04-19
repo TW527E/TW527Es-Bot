@@ -17,7 +17,6 @@ DEFAULT_SETTINGS = {
     "Token": "",
     "Owner_id": "",
     "bot_ready_channel": "",
-    "prefix": "|",
     "Indecent_words": [],
     "MC_img": [],
     "url_img": [],
@@ -52,26 +51,25 @@ def write_json(path, data):
 def get_settings():
     _load_dotenv()
     settings = DEFAULT_SETTINGS.copy()
-    settings.update(read_json(SETTINGS_PATH, {}))
+    stored_settings = read_json(SETTINGS_PATH, {})
+    settings.update({key: value for key, value in stored_settings.items() if key in DEFAULT_SETTINGS})
 
     token = os.getenv("DISCORD_TOKEN")
     owner_id = os.getenv("DISCORD_OWNER_ID")
-    prefix = os.getenv("DISCORD_COMMAND_PREFIX")
 
     if token:
         settings["Token"] = token
     if owner_id:
         settings["Owner_id"] = owner_id
-    if prefix:
-        settings["prefix"] = prefix
 
     return settings
 
 
 def save_settings(settings):
     current = DEFAULT_SETTINGS.copy()
-    current.update(read_json(SETTINGS_PATH, {}))
-    current.update(settings)
+    stored_settings = read_json(SETTINGS_PATH, {})
+    current.update({key: value for key, value in stored_settings.items() if key in DEFAULT_SETTINGS})
+    current.update({key: value for key, value in settings.items() if key in DEFAULT_SETTINGS})
     write_json(SETTINGS_PATH, current)
 
 

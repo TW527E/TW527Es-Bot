@@ -2,11 +2,13 @@ import asyncio
 from pathlib import Path
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from core.classes import Cog_Extension
 from core.config import DATA_DIR, ROOT, read_json, write_json
 from core.discord_helpers import avatar_url
+from core.interactions import respond
 from core.loggee import Loggee
 
 
@@ -63,10 +65,11 @@ class Level(Cog_Extension):
             Loggee(f"『等級系統』{message.author} 升等，目前等級為 {data['level']}")
             await message.channel.send(f"『等級系統』**{message.author}** 你升級了，目前等級為 **{data['level']}**")
 
-    @commands.command()
-    @commands.guild_only()
-    async def level(self, ctx, member: discord.Member = None):
-        member = member or ctx.author
+    @app_commands.command(name="level", description="查看等級資料")
+    @app_commands.describe(member="要查看的成員，留空則查看自己")
+    @app_commands.guild_only()
+    async def level(self, interaction: discord.Interaction, member: discord.Member | None = None):
+        member = member or interaction.user
         member_id = self._ensure_user(member)
         data = self.users[member_id]
         needed = self._needed_exp(data["level"]) - data["exp"]
@@ -76,8 +79,8 @@ class Level(Cog_Extension):
         embed.add_field(name="目前等級", value=str(data["level"]), inline=False)
         embed.add_field(name="經驗值", value=f"還差 {needed} 個經驗才能升級", inline=False)
         embed.add_field(name="打了多少次訊息", value=str(data["message"]), inline=False)
-        embed.set_footer(text=f"此指令由 {ctx.author} 輸入", icon_url=avatar_url(ctx.author))
-        await ctx.send(embed=embed)
+        embed.set_footer(text=f"此指令由 {interaction.user} 輸入", icon_url=avatar_url(interaction.user))
+        await respond(interaction, embed=embed, ephemeral=True)
 
 
 async def setup(bot):

@@ -6,8 +6,8 @@
 
 ## 目前功能
 
-- 基本指令：`ping`、`avatar`、`info`、`guild`、`now_time`
-- 管理指令：`kick`、`ban`、`unban`、`del_msg`、`say_msg`、`say_dm`
+- 基本斜線指令：`/ping`、`/avatar`、`/info`、`/guild`、`/now_time`
+- 管理斜線指令：`/kick`、`/ban`、`/unban`、`/del_msg`、`/say_msg`、`/say_dm`
 - 伺服器管理：建立文字/語音頻道、查看/新增/移除身分組、修改伺服器名稱
 - 事件監聽：成員加入/離開通知、reaction role
 - 訊息互動：關鍵字回覆、不雅詞過濾
@@ -25,12 +25,14 @@
 安裝依賴：
 
 ```powershell
-python -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 ## Discord 設定
 
-因為本機指令使用 `|` 這種非 mention prefix，並且 bot 會讀取訊息內容與成員加入/離開事件，請在 Discord Developer Portal 的 Bot 頁面啟用：
+本專案使用 Discord 斜線指令。邀請 bot 時需要包含 `bot` 和 `applications.commands` scopes。
+
+因為 bot 仍會讀取訊息內容做關鍵字回覆、不雅詞過濾與等級系統，並且會監聽成員加入/離開事件，請在 Discord Developer Portal 的 Bot 頁面啟用：
 
 - Message Content Intent
 - Server Members Intent
@@ -50,7 +52,6 @@ python -m pip install -r requirements.txt
 ```env
 DISCORD_TOKEN=你的 Bot Token
 DISCORD_OWNER_ID=你的 Discord 使用者 ID
-DISCORD_COMMAND_PREFIX=|
 ```
 
 也可以用 `setting.example.json` 建立本機 `setting.json`，常用欄位如下：
@@ -58,7 +59,6 @@ DISCORD_COMMAND_PREFIX=|
 - `Token`：Discord Bot Token，建議改用 `.env` 的 `DISCORD_TOKEN`
 - `Owner_id`：bot 擁有者 Discord 使用者 ID
 - `bot_ready_channel`：bot 上線通知頻道 ID
-- `prefix`：文字指令前綴，預設 `|`
 - `Indecent_words`：不雅詞過濾清單
 - `MC_img`：指定本機圖片路徑清單，空陣列時會 fallback 到 `Photo/`
 - `url_img`：隨機網路圖片 URL 清單
@@ -68,10 +68,12 @@ DISCORD_COMMAND_PREFIX=|
 
 伺服器專屬設定請參考 `servers/server.example.json` 建立本機 `servers/<name>.json`。這些檔案已被 `.gitignore` 忽略。
 
+啟動時如果存在 `servers/*.json`，程式會把 slash commands 同步到這些 guild，通常可立即測試。若沒有伺服器設定檔，程式會同步全域 slash commands，Discord 可能需要一段時間才會顯示。
+
 ## 啟動
 
 ```powershell
-python start.py
+.\.venv\Scripts\python.exe start.py
 ```
 
 Windows 也可以執行：
