@@ -28,7 +28,7 @@ DEFAULT_SETTINGS = {
 
 def _load_dotenv():
     if load_dotenv is not None:
-        load_dotenv(ROOT / ".env")
+        load_dotenv(ROOT / ".env", override=True)
 
 
 def read_json(path, default=None):
