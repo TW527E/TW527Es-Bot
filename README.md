@@ -24,9 +24,10 @@ English version: [README.en.md](README.en.md)
 - Discord Bot Token
 - 已在 Discord Developer Portal 啟用必要 intents
 
-安裝依賴：
+安裝依賴（先建立虛擬環境；Linux／macOS 請改用 `.venv/bin/python`）：
 
 ```powershell
+python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 

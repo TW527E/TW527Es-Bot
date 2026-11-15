@@ -24,6 +24,20 @@ def owner_only():
     return app_commands.check(owner_check)
 
 
+EMBED_TOTAL_LIMIT = 6000
+
+
+def fit_embed(embed: discord.Embed):
+    """Drop trailing fields until the embed fits Discord's 6000-character total."""
+    trimmed = False
+    while len(embed) > EMBED_TOTAL_LIMIT - 40 and embed.fields:
+        embed.remove_field(len(embed.fields) - 1)
+        trimmed = True
+    if trimmed:
+        embed.add_field(name="…", value="內容過長，其餘部分已省略。", inline=False)
+    return embed
+
+
 def chunk_values(values, *, separator=", ", max_length=1000):
     chunks = []
     current = ""

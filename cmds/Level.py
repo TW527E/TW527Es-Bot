@@ -25,6 +25,11 @@ class Level(Cog_Extension):
 
     def cog_unload(self):
         self.save_task.cancel()
+        # Keep what was earned since the last periodic save (reload, shutdown).
+        try:
+            write_json(LEVELS_PATH, self.users)
+        except OSError as exc:
+            Loggee(f"『等級系統』儲存失敗：{exc}")
 
     def _load_users(self):
         if LEVELS_PATH.exists():
@@ -36,7 +41,10 @@ class Level(Cog_Extension):
     async def _save_periodically(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            write_json(LEVELS_PATH, self.users)
+            try:
+                write_json(LEVELS_PATH, self.users)
+            except OSError as exc:
+                Loggee(f"『等級系統』儲存失敗：{exc}")
             await asyncio.sleep(30)
 
     @staticmethod

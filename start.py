@@ -5,7 +5,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from core.config import get_guild_configs, get_owner_id, get_settings, get_token, int_or_none
-from core.interactions import owner_only, respond
+from core.interactions import defer, owner_only, respond
 from core.loggee import Loggee
 
 
@@ -193,7 +193,13 @@ async def invite(interaction: discord.Interaction):
         await respond(interaction, "機器人尚未登入。", ephemeral=True)
         return
 
-    permissions = discord.Permissions(administrator=True)
+    # Only what the commands use; Administrator would also bypass every channel override.
+    permissions = discord.Permissions(
+        view_channel=True, send_messages=True, embed_links=True, attach_files=True,
+        add_reactions=True, read_message_history=True, manage_messages=True,
+        kick_members=True, ban_members=True, manage_nicknames=True, manage_roles=True,
+        manage_channels=True, manage_guild=True,
+    )
     url = discord.utils.oauth_url(bot.user.id, permissions=permissions, scopes=("bot", "applications.commands"))
     await respond(interaction, f"機器人的邀請碼: {url}", ephemeral=True)
 
@@ -202,6 +208,7 @@ async def invite(interaction: discord.Interaction):
 @app_commands.describe(extension="例如 cmds.Main")
 @owner_only()
 async def load(interaction: discord.Interaction, extension: str):
+    await defer(interaction, ephemeral=True)  # syncing every guild can take longer than three seconds
     await bot.load_extension(extension)
     await bot.sync_application_commands()
     await respond(interaction, f"載入 **{extension}** 完成!", ephemeral=True)
@@ -211,6 +218,7 @@ async def load(interaction: discord.Interaction, extension: str):
 @app_commands.describe(extension="例如 cmds.Main")
 @owner_only()
 async def unload(interaction: discord.Interaction, extension: str):
+    await defer(interaction, ephemeral=True)
     await bot.unload_extension(extension)
     await bot.sync_application_commands()
     await respond(interaction, f"卸載 **{extension}** 完成!", ephemeral=True)
@@ -220,6 +228,7 @@ async def unload(interaction: discord.Interaction, extension: str):
 @app_commands.describe(extension="例如 cmds.Main")
 @owner_only()
 async def reload_extension(interaction: discord.Interaction, extension: str):
+    await defer(interaction, ephemeral=True)
     await bot.reload_extension(extension)
     await bot.sync_application_commands()
     await respond(interaction, f"重新載入 **{extension}** 完成!", ephemeral=True)
@@ -228,6 +237,7 @@ async def reload_extension(interaction: discord.Interaction, extension: str):
 @bot.tree.command(name="reload_all", description="重新載入所有 extension")
 @owner_only()
 async def reload_all(interaction: discord.Interaction):
+    await defer(interaction, ephemeral=True)
     for extension in list(bot.extensions):
         await bot.reload_extension(extension)
     await bot.sync_application_commands()

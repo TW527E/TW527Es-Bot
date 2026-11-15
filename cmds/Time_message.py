@@ -6,10 +6,13 @@ from discord.ext import commands, tasks
 
 from core.classes import Cog_Extension
 from core.config import get_settings, int_or_none, save_settings
-from core.interactions import respond
+from core.interactions import owner_only, respond
 from core.loggee import Loggee
 
 
+# There is one announcement for the whole bot (time, text and channel are global
+# settings), so only the bot owner may change it. Otherwise an administrator of
+# any server the bot is in could rewrite what is posted in another server.
 class Time_message(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
@@ -35,8 +38,14 @@ class Time_message(Cog_Extension):
         if channel is None:
             return
 
-        await channel.send(str(settings.get("auto_message") or "test"))
+        # One attempt per day either way: an error must not stop the loop for good,
+        # and must not resend every minute either.
         self.last_sent_date = now.date()
+        try:
+            await channel.send(str(settings.get("auto_message") or "test"))
+        except discord.HTTPException as exc:
+            Loggee(f"自動公告送出失敗（{channel}）：{exc}")
+            return
         Loggee(f"自動公告已送出到 {channel}")
 
     @announcement_loop.before_loop
@@ -46,6 +55,7 @@ class Time_message(Cog_Extension):
     @app_commands.command(name="set_auto_time", description="設定自動公告時間")
     @app_commands.describe(time_text="HHMM 或 HH:MM，例如 0900 或 21:30")
     @app_commands.default_permissions(administrator=True)
+    @owner_only()
     async def set_auto_time(self, interaction: discord.Interaction, time_text: str):
         cleaned = time_text.replace(":", "").strip()
         if len(cleaned) != 4 or not cleaned.isdigit():
@@ -66,6 +76,7 @@ class Time_message(Cog_Extension):
     @app_commands.describe(channel="公告頻道，留空則使用目前頻道")
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
+    @owner_only()
     async def set_auto_ch(self, interaction: discord.Interaction, channel: discord.TextChannel | None = None):
         channel = channel or interaction.channel
         if not isinstance(channel, discord.TextChannel):
@@ -78,6 +89,7 @@ class Time_message(Cog_Extension):
     @app_commands.command(name="set_auto_msg", description="設定自動公告內容")
     @app_commands.describe(message="公告內容")
     @app_commands.default_permissions(administrator=True)
+    @owner_only()
     async def set_auto_msg(self, interaction: discord.Interaction, message: str):
         save_settings({"auto_message": message})
         await respond(interaction, "『公告設定』自動公告內容已更新。", ephemeral=True)

@@ -20,7 +20,11 @@ KEYWORD_REPLIES = {
 
 
 def _normalise(content):
-    return content.strip().rstrip("!！?？").lower()
+    stripped = content.strip()
+    # A message of only question marks is the "?" keyword, not an empty one.
+    if stripped and not stripped.strip("?？"):
+        return "?"
+    return stripped.rstrip("!！?？").lower()
 
 
 def _indecent_words():
@@ -37,12 +41,11 @@ class Msg(Cog_Extension):
             return
 
         normalised = _normalise(msg.content)
-        for keyword, reply in KEYWORD_REPLIES.items():
-            if normalised == _normalise(keyword):
-                await msg.channel.send(reply)
-                Loggee(f"『訊息觸發』[{msg.author}] 觸發關鍵字 [{keyword}]")
-                return
+        # Attachments and stickers have no text; they are not a keyword.
+        if not normalised:
+            return
 
+        # The filter runs first, so a blocked word that is also a keyword is removed, not answered.
         if normalised in _indecent_words():
             try:
                 await msg.delete()
@@ -50,6 +53,13 @@ class Msg(Cog_Extension):
                 pass
             await msg.channel.send(f"{msg.author.mention} 請勿輸入不雅詞語。", delete_after=8)
             Loggee(f"『訊息觸發』[{msg.author}] 觸發不雅詞語過濾")
+            return
+
+        for keyword, reply in KEYWORD_REPLIES.items():
+            if normalised == _normalise(keyword):
+                await msg.channel.send(reply)
+                Loggee(f"『訊息觸發』[{msg.author}] 觸發關鍵字 [{keyword}]")
+                return
 
 
 async def setup(bot):

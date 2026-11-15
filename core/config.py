@@ -43,9 +43,16 @@ def read_json(path, default=None):
 def write_json(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
-        file.write("\n")
+    # Write a temporary file and swap it in: opening the real file with "w"
+    # empties it first, so a full disk or a crash would leave broken JSON.
+    temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        with temporary.open("w", encoding="utf8") as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+            file.write("\n")
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def get_settings():

@@ -42,9 +42,12 @@ class Vote(Cog_Extension):
             await respond(interaction, f"最多只能提供 {len(VOTE_EMOJIS)} 個選項。", ephemeral=True)
             return
 
-        embed = discord.Embed(title=title, description="投票", color=0x28D252)
+        embed = discord.Embed(title=title[:256], description="投票", color=0x28D252)
         for emoji, option in zip(VOTE_EMOJIS, choices):
             embed.add_field(name=f"反應 {emoji}", value=option[:1024], inline=False)
+        if len(embed) > 6000:
+            await respond(interaction, "投票內容太長（標題與所有選項合計不能超過 6000 字），請縮短後再試。", ephemeral=True)
+            return
 
         await interaction.response.send_message(embed=embed)
         message = await interaction.original_response()
