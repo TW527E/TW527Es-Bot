@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 from pathlib import Path
 
 try:
@@ -46,8 +47,16 @@ def write_json(path, data):
     # Write a temporary file and swap it in: opening the real file with "w"
     # empties it first, so a full disk or a crash would leave broken JSON.
     temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    # Keep the file's mode (settings can hold secrets): a new file would get
+    # the umask default instead. A file that does not exist yet starts at 0600.
     try:
-        with temporary.open("w", encoding="utf8") as file:
+        mode = stat.S_IMODE(path.stat().st_mode)
+    except FileNotFoundError:
+        mode = 0o600
+    try:
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
+        os.fchmod(fd, mode)
+        with os.fdopen(fd, "w", encoding="utf8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
             file.write("\n")
         os.replace(temporary, path)

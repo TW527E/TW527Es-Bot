@@ -195,7 +195,8 @@ async def invite(interaction: discord.Interaction):
 
     # Only what the commands use; Administrator would also bypass every channel override.
     permissions = discord.Permissions(
-        view_channel=True, send_messages=True, embed_links=True, attach_files=True,
+        view_channel=True, send_messages=True, send_messages_in_threads=True,
+        create_instant_invite=True, embed_links=True, attach_files=True,
         add_reactions=True, read_message_history=True, manage_messages=True,
         kick_members=True, ban_members=True, manage_nicknames=True, manage_roles=True,
         manage_channels=True, manage_guild=True,
