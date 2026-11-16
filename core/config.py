@@ -55,7 +55,10 @@ def write_json(path, data):
         mode = 0o600
     try:
         fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
-        os.fchmod(fd, mode)
+        # The umask can still strip bits from the mode given to open().
+        # Windows has no fchmod and only knows the read-only flag.
+        if hasattr(os, "fchmod"):
+            os.fchmod(fd, mode)
         with os.fdopen(fd, "w", encoding="utf8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
             file.write("\n")
