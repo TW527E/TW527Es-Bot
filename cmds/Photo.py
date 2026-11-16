@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from core.classes import Cog_Extension
 from core.config import ROOT, get_configured_images, get_settings
-from core.interactions import respond
+from core.interactions import owner_only, respond
 from core.loggee import Loggee
 
 
@@ -18,6 +18,7 @@ SAFE_FILENAME = re.compile(r"^[A-Za-z0-9_-]+$")
 class Photo(Cog_Extension):
     @app_commands.command(name="get_user_icon", description="下載指定成員頭像到本機 downloads 資料夾")
     @app_commands.describe(member="要下載頭像的成員，留空則下載自己")
+    @owner_only()  # writes to the host's disk on every call
     async def get_user_icon(self, interaction: discord.Interaction, member: discord.Member | None = None):
         member = member or interaction.user
         target_dir = ROOT / "downloads" / "avatars"

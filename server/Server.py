@@ -3,8 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 
 from core.classes import Cog_Extension
-from core.discord_helpers import avatar_url, guild_icon_url
-from core.interactions import chunk_values, respond
+from core.discord_helpers import avatar_url, guild_icon_url, moderation_problem
+from core.interactions import chunk_values, fit_embed, respond
 from core.loggee import Loggee
 
 
@@ -33,6 +33,10 @@ class Server(Cog_Extension):
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_roles=True)
     async def add_role(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
+        problem = moderation_problem(interaction, "manage_roles", role=role)
+        if problem:
+            await respond(interaction, problem, ephemeral=True)
+            return
         await member.add_roles(role, reason=f"{interaction.user} used add_role")
         await self._send_role_embed(interaction, "增加使用者身分組", member, role)
 
@@ -41,6 +45,10 @@ class Server(Cog_Extension):
     @app_commands.guild_only()
     @app_commands.default_permissions(manage_roles=True)
     async def remove_role(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
+        problem = moderation_problem(interaction, "manage_roles", role=role)
+        if problem:
+            await respond(interaction, problem, ephemeral=True)
+            return
         await member.remove_roles(role, reason=f"{interaction.user} used remove_role")
         await self._send_role_embed(interaction, "刪除使用者身分組", member, role)
 
@@ -65,7 +73,7 @@ class Server(Cog_Extension):
             name = "身分組" if index == 1 else f"身分組 {index}"
             embed.add_field(name=name, value=chunk, inline=False)
         embed.set_footer(text=f"此指令由 {interaction.user} 輸入", icon_url=avatar_url(interaction.user))
-        await respond(interaction, embed=embed, ephemeral=True)
+        await respond(interaction, embed=fit_embed(embed), ephemeral=True)
 
     async def _send_role_embed(self, interaction, title, member, role):
         embed = discord.Embed(title=f"『{title}』", color=0xD08A2B)

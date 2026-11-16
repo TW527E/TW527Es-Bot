@@ -4,8 +4,8 @@ from discord.ext import commands
 
 from core.classes import Cog_Extension
 from core.config import int_or_none
-from core.discord_helpers import avatar_url
-from core.interactions import respond
+from core.discord_helpers import avatar_url, moderation_problem
+from core.interactions import defer, respond
 from core.loggee import Loggee
 
 
@@ -24,6 +24,10 @@ class Main(Cog_Extension):
     @app_commands.guild_only()
     @app_commands.default_permissions(kick_members=True)
     async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str | None = None):
+        problem = moderation_problem(interaction, "kick_members", member=member)
+        if problem:
+            await respond(interaction, problem, ephemeral=True)
+            return
         await member.kick(reason=reason)
         Loggee(f"《指令》〔{interaction.user}〕 踢出 {member}，原因: {reason or '未提供'}")
         await respond(interaction, f"使用者 **{member}** 已被踢出", ephemeral=True)
@@ -33,6 +37,10 @@ class Main(Cog_Extension):
     @app_commands.guild_only()
     @app_commands.default_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str | None = None):
+        problem = moderation_problem(interaction, "ban_members", member=member)
+        if problem:
+            await respond(interaction, problem, ephemeral=True)
+            return
         await member.ban(reason=reason)
         Loggee(f"《指令》〔{interaction.user}〕 封鎖 {member}，原因: {reason or '未提供'}")
         await respond(interaction, f"使用者 **{member}** 已被封鎖", ephemeral=True)
@@ -42,7 +50,23 @@ class Main(Cog_Extension):
     @app_commands.guild_only()
     @app_commands.default_permissions(ban_members=True)
     async def unban(self, interaction: discord.Interaction, user: str):
+        if not interaction.permissions.ban_members:
+            await respond(interaction, "你沒有執行這個指令所需的權限。", ephemeral=True)
+            return
+        # Looking through the ban list can take longer than Discord's three seconds.
+        await defer(interaction, ephemeral=True)
         target_id = int_or_none(user)
+
+        if target_id is not None:
+            try:
+                ban_entry = await interaction.guild.fetch_ban(discord.Object(id=target_id))
+            except discord.NotFound:
+                await respond(interaction, "找不到這位被封鎖的使用者。", ephemeral=True)
+                return
+            await interaction.guild.unban(ban_entry.user)
+            Loggee(f"《指令》〔{interaction.user}〕 解除封鎖 {ban_entry.user}")
+            await respond(interaction, f"使用者 **{ban_entry.user}** 已經解除封鎖", ephemeral=True)
+            return
 
         async for ban_entry in interaction.guild.bans(limit=None):
             banned_user = ban_entry.user
@@ -63,6 +87,11 @@ class Main(Cog_Extension):
     async def rename(self, interaction: discord.Interaction, member: discord.Member, name: str):
         if self.bot.user and member.id == self.bot.user.id and not await self.bot.is_owner(interaction.user):
             await respond(interaction, f"『想幹嘛阿』**{interaction.user.mention}** 想幹嘛阿!", ephemeral=True)
+            return
+
+        problem = moderation_problem(interaction, "manage_nicknames", member=member)
+        if problem:
+            await respond(interaction, problem, ephemeral=True)
             return
 
         before = member.display_name

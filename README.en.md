@@ -24,9 +24,10 @@ Music playback has been fully removed. The original module had long-term stabili
 - Discord Bot Token
 - Required intents enabled in the Discord Developer Portal
 
-Install dependencies:
+Install dependencies (create the virtual environment first; on Linux/macOS use `.venv/bin/python`):
 
 ```powershell
+python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 

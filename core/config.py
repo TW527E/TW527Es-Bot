@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 from pathlib import Path
 
 try:
@@ -43,9 +44,27 @@ def read_json(path, default=None):
 def write_json(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=4)
-        file.write("\n")
+    # Write a temporary file and swap it in: opening the real file with "w"
+    # empties it first, so a full disk or a crash would leave broken JSON.
+    temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    # Keep the file's mode (settings can hold secrets): a new file would get
+    # the umask default instead. A file that does not exist yet starts at 0600.
+    try:
+        mode = stat.S_IMODE(path.stat().st_mode)
+    except FileNotFoundError:
+        mode = 0o600
+    try:
+        fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
+        # The umask can still strip bits from the mode given to open().
+        # Windows has no fchmod and only knows the read-only flag.
+        if hasattr(os, "fchmod"):
+            os.fchmod(fd, mode)
+        with os.fdopen(fd, "w", encoding="utf8") as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+            file.write("\n")
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def get_settings():
